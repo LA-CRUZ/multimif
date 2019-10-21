@@ -1,0 +1,14 @@
+// import all global needs
+
+@import "./reset";
+@import "./variable";
+@import "./global";
+@import "./animation";
+
+// import all content scss file
+
+@import "./content/home";
+
+// import all file that do responsive support
+
+@import "./content/responsive/home";

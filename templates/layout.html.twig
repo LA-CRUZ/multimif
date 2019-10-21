@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block header %}
+    <header>
+        <nav class="header-menu">
+            {% block menu %}{% endblock %}
+        </nav>
+    </header>
+{% endblock %}
+
+{% block content %}
+    <main>
+        {% block main_content %}{% endblock %}
+    </main>
+{% endblock %}
+
+{% block footer %}
+    <footer>
+
+    </footer>
+{% endblock %}
