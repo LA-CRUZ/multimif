@@ -1,5 +1,5 @@
 phpunit:
   script:
-    - phpunit /tests/*
+    - phpunit tests/*
 
 
