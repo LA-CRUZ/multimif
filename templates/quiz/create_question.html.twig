@@ -1,0 +1,23 @@
+{% extends 'layout.html.twig' %}
+
+{% block menu %}
+    {% include "_menu.html.twig" with {
+        'active': 'home'
+    } %}
+{% endblock %}
+
+{% block main_content %}
+    {{ form_start(formQuizQuestion) }}
+    
+    <div class="form-group">
+        <label for="">Texte de la question :</label>
+        {{ form_widget(formQuizQuestion.texte)}}
+    </div>
+
+    {% for reponse in formQuizQuestion.reponses %}
+        {{ form_row(reponse.texte) }}
+        {{ form_row(reponse.juste) }}
+    {% endfor %}
+
+    {{ form_end(formQuizQuestion) }}
+{% endblock %}
