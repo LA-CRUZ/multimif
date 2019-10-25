@@ -1,0 +1,6 @@
+image: composer:latest
+
+test:app:
+  script: 
+    - composer install
+    - ./vendor/bin/simple-phpunit
