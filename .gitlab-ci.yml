@@ -2,3 +2,4 @@ image: composer:latest
 
 test:app:
   script: ./vendor/bin/simple-phpunit
+  #nice comment
