@@ -4,6 +4,7 @@ twig:
     strict_variables: '%kernel.debug%'
     globals:
         main_menu:
-            - { label: 'label.menu', route: '' }
-            - { label: 'label.menu', route: '' }
-            - { label: 'label.menu', route: '' }
+            - { label: 'Accueil', route: '' }
+            - { label: 'Mon compte', route: '' }
+            - { label: 'Inscription', route: '' }
+            - { label: 'Connexion', route: '' }
