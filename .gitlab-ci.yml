@@ -1,5 +1,4 @@
-phpunit:
-  script:
-    - phpunit tests/*
+image: composer:latest
 
-
+test:app:
+  script: ./vendor/bin/simple-phpunit
