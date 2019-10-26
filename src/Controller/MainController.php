@@ -96,14 +96,39 @@ class MainController extends AbstractController
             'formQuizQuestion' => $form->createView()
         ]);    
     }
+
+    /**
+     * @Route("/quiz", name="quiz")
+     * 
+     */
+
+     public function show_quiz_list(){
+         $repo = $this->getDoctrine()->getRepository(Quiz::class);
+
+         $quiz_list = $repo->findAll();
+         if(!$quiz_list){
+             throw $this->createNotFoundException('No quiz found');
+         }
+
+         return $this->render('quiz/quiz_list.html.twig', [
+             'controller_name' => 'MainController',
+             'quiz_list' => $quiz_list
+         ]);
+         
+     }
  
     /**
-     * @Route("/quiz/{id}", name="quiz")
+     * @Route("/quiz/{id}", name="show_quiz")
      */
-    public function quiz()
+    public function quiz ($id)
     {
+        $repo = $this->getDoctrine()->getRepository(Quiz::class);
+
+        $quiz = $repo->find($id);
+        
         return $this->render('quiz/quiz.html.twig', [
             'controller_name' => 'MainController',
+            'quiz' => $quiz
         ]);    
     }
     
@@ -126,4 +151,8 @@ class MainController extends AbstractController
             'controller_name' => 'MainController',
         ]);    
     }
+
+    /**
+     * 
+     */
 }
