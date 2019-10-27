@@ -1,5 +1,7 @@
 {% extends 'layout.html.twig' %}
 
+{% form_theme formQuizQuestion 'bootstrap_4_layout.html.twig' %}
+
 {% block menu %}
     {% include "_menu.html.twig" with {
         'active': 'home'
@@ -7,13 +9,12 @@
 {% endblock %}
 
 {% block main_content %}
+    <h1>Entrez la première question :</h1>
     {{ form_start(formQuizQuestion) }}
     
-    <div class="form-group">
-        <label for="">Texte de la question :</label>
-        {{ form_widget(formQuizQuestion.texte)}}
-    </div>
+    {{ form_widget(formQuizQuestion.texte)}}
 
+    <h1>Entrez les réponses associées :</h1>
     {% for reponse in formQuizQuestion.reponses %}
         {{ form_row(reponse.texte) }}
         {{ form_row(reponse.juste) }}
