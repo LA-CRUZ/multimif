@@ -7,11 +7,9 @@
 {% endblock %}
 
 {% block main_content %}
-<ul>
-    <li><a href="{{ path('create') }}">Créer un questionnaire</a></li>
-    <li><a href="{{ path('quiz')}}">Voir les quizz</a></li>
-</ul>
-
-   
-    
+    <div class="intro">
+        <h1>Bienvenue sur votre site de création de quiz en ligne</h1>
+        <h2>Commencez dès maintenant en créant votre Quiz</h2>
+        <a href="{{ path('create') }}"><button type="button" class="btn btn-primary btn-creation">Créer un questionnaire</button></a>
+    </div>
 {% endblock %}

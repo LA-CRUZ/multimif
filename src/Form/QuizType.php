@@ -6,6 +6,7 @@ use App\Entity\Quiz;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class QuizType extends AbstractType
@@ -13,10 +14,19 @@ class QuizType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('titre')
-            ->add('description')
-            ->add('save', SubmitType::class, [
-                'attr' => ['class' => 'save'],
+            ->add('titre',TextType::class, [
+                'attr' => [
+                    'placeholder' => 'Entrez le titre du Quiz',
+                    'required' => true
+                ]
+            ])
+            ->add('description',TextType::class, [
+                'attr' => [
+                    'placeholder' => 'Entrez la description du Quiz'
+                ]
+            ])
+            ->add('Suivant', SubmitType::class, [
+                'attr' => ['class' => 'btn btn-success btn-question'],
             ])
         ;
     }

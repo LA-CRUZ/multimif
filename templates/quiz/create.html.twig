@@ -1,5 +1,7 @@
 {% extends 'layout.html.twig' %}
 
+{% form_theme formQuiz 'bootstrap_4_layout.html.twig' %}
+
 {% block menu %}
     {% include "_menu.html.twig" with {
         'active': 'home'
@@ -7,18 +9,12 @@
 {% endblock %}
 
 {% block main_content %}
-    {{ form_start(formQuiz) }}
-    
-    <div class="form-group">
-        <label for="">Titre :</label>
-        {{ form_widget(formQuiz.titre)}}
+    <div class="create-quiz">
+        <h1>Création de votre Quiz</h1>
+        {{ form_start(formQuiz) }}
+
+        {{ form_widget(formQuiz)}}
+
+        {{ form_end(formQuiz) }}
     </div>
-
-    <div class="form-group">
-        <label for="">Description :</label>
-        {{ form_widget(formQuiz.description)}}
-    </div>
-
-
-    {{ form_end(formQuiz) }}
 {% endblock %}

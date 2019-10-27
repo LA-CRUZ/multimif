@@ -1,7 +1,7 @@
-<ul>
+<ul class="navbar-nav mr-auto">
     {% for link in main_menu %}
-        <li>
-            <a href="{{ url(link.route) }}" {% if link.route == active %}class="active"{% endif %}>
+        <li class="nav-item">
+            <a href="{{ url(link.route) }}" class="nav-link" {% if link.route == active %}class="active"{% endif %}>
                 {{ link.label | trans }}
             </a>
         </li>

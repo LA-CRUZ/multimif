@@ -1,0 +1,24 @@
+.intro {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+
+    .btn-creation {
+        border: none;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        width: 40%;
+        height: 5rem;
+        margin: 4rem;
+        background-color: $blue;
+
+        &:hover {
+            transition: 0.5s;
+            background-color: white;
+            color: $blue;
+        }
+    }
+}

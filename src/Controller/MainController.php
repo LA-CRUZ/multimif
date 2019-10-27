@@ -88,7 +88,7 @@ class MainController extends AbstractController
             {
                 return $this->redirectToRoute('create_question', ['id' => $id]);
             } else {
-                return $this->redirectToRoute('home');
+                return $this->redirectToRoute('show_quiz', ['id' => $id]);
             }
         }
 

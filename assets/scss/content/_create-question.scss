@@ -1,0 +1,41 @@
+.create-question {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    form {
+        width: 70%
+    }
+
+    h1 {
+        text-align: center;
+        margin: 2rem;
+    }
+
+    input {
+        color: $dark-blue;
+        font-size: 1.2rem;
+    }
+
+    hr {
+        color: white;
+        height: 1rem;
+    }
+
+    .form-check-label {
+        font-size: 1.2rem;
+    }
+
+    .btn-form {
+        display: flex;
+        justify-content: flex-end;
+
+        .btn-question {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            margin: 1rem;
+        }
+    }
+
+}
