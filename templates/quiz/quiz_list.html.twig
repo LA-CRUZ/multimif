@@ -7,11 +7,8 @@
 {% endblock %}
 
 {% block main_content %}
-<ul>
-    <li><a href="{{ path('create') }}">Créer un questionnaire</a></li>
-    <li><a href="{{ path('quiz')}}">Voir les quizz</a></li>
-</ul>
+    {% for quiz in quiz_list %}
+        <a href="quiz/{{quiz.id}}">{{quiz.titre}}</a>
 
-   
-    
+        {% endfor %}
 {% endblock %}
