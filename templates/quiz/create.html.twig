@@ -9,10 +9,12 @@
 {% endblock %}
 
 {% block main_content %}
-    <h1>Création de votre Quiz :</h1>
-    {{ form_start(formQuiz) }}
+    <div class="create-quiz">
+        <h1>Création de votre Quiz</h1>
+        {{ form_start(formQuiz) }}
 
-    {{ form_widget(formQuiz)}}
+        {{ form_widget(formQuiz)}}
 
-    {{ form_end(formQuiz) }}
+        {{ form_end(formQuiz) }}
+    </div>
 {% endblock %}

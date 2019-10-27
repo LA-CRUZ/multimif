@@ -9,16 +9,24 @@
 {% endblock %}
 
 {% block main_content %}
-    <h1>Entrez la première question :</h1>
-    {{ form_start(formQuizQuestion) }}
-    
-    {{ form_widget(formQuizQuestion.texte)}}
+    <div class="create-question">
+        <h1>Entrez une question</h1>
+        {{ form_start(formQuizQuestion) }}
+        
+        {{ form_widget(formQuizQuestion.texte)}}
+        <br><br><br>
+        <h1>Entrez les réponses associées</h1>
+        {% for reponse in formQuizQuestion.reponses %}
+            {{ form_row(reponse.texte) }}
+            {{ form_row(reponse.juste) }}
+            <hr>
+        {% endfor %}
 
-    <h1>Entrez les réponses associées :</h1>
-    {% for reponse in formQuizQuestion.reponses %}
-        {{ form_row(reponse.texte) }}
-        {{ form_row(reponse.juste) }}
-    {% endfor %}
+        <div class="btn-form">
+            {{ form_row(formQuizQuestion.add) }}
+            {{ form_row(formQuizQuestion.end) }}
+        </div>
 
-    {{ form_end(formQuizQuestion) }}
+        {{ form_end(formQuizQuestion) }}
+    </div>
 {% endblock %}

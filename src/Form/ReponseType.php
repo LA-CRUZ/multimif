@@ -17,12 +17,13 @@ class ReponseType extends AbstractType
             ->add('texte',TextType::class, [
                 'attr' => [
                     'placeholder' => 'Entrez une réponse',
-                    'required' => true
-                ]
+                    'required' => true,
+                ],
+                'label' => 'Réponse'
             ])
             ->add('juste', CheckboxType::class, [
                 'required' => false,
-                'label' => 'Cochez cette case si la réponse est juste'
+                'label' => 'Cochez cette case si cette réponse est juste'
             ])
         ;
     }

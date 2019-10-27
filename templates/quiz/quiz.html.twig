@@ -7,5 +7,21 @@
 {% endblock %}
 
 {% block main_content %}
-    Quiz
+    <div class="display-quiz">
+        <h1> {{ quiz.titre }} </h1>
+        <p>  {{ quiz.description }} </p>
+
+        <ul>
+            {% for question in quiz.questions %}
+            <li class="question"> {{question.texte}} </li>
+            <br>
+                <ul>
+                    {% for reponse in question.reponses %}
+                        <li class="reponse">• {{ reponse.texte }} </li>
+                    {% endfor %}
+                </ul>
+                <br><br>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

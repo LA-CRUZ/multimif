@@ -26,7 +26,7 @@ class QuizType extends AbstractType
                 ]
             ])
             ->add('Suivant', SubmitType::class, [
-                'attr' => ['class' => 'btn btn-success'],
+                'attr' => ['class' => 'btn btn-success btn-question'],
             ])
         ;
     }

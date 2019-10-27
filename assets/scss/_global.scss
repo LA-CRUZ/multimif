@@ -1,0 +1,25 @@
+h1 {
+    font-size: 2rem;
+    text-transform: uppercase;
+    color: $blue;
+    font-weight: bold;
+}
+
+
+h2 {
+    font-size: 1.5rem;
+    color: white;
+    margin: 1rem;
+}
+
+body {
+    background-image: url(../images/board.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+label  {
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}

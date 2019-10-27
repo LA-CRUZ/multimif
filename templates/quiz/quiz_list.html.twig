@@ -1,0 +1,20 @@
+{% extends 'layout.html.twig' %}
+
+{% block menu %}
+    {% include "_menu.html.twig" with {
+        'active': 'home'
+    } %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="bloc-list">
+        <h1>Liste des quiz déja créés</h1>
+        <div class="list-quiz">
+            <div class="list">
+                {% for quiz in quiz_list %}
+                    <a href="quiz/{{quiz.id}}"><button type="button" class="btn btn-primary item_list">{{quiz.titre}}</button></a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

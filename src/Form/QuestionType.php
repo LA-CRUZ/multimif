@@ -26,11 +26,11 @@ class QuestionType extends AbstractType
                 'entry_options' => ['label' => false],
             ])
             ->add('add', SubmitType::class, [
-                'attr' => ['class' => 'btn btn-info'],
+                'attr' => ['class' => 'btn btn-info btn-question'],
                 'label' => 'Ajouter une autre question'
             ])
             ->add('end', SubmitType::class, [
-                'attr' => ['class' => 'btn btn-success'],
+                'attr' => ['class' => 'btn btn-success btn-question'],
                 'label' => 'Terminer'
             ])
         ;
