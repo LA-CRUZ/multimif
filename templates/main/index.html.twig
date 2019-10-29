@@ -11,12 +11,5 @@
         <h1>Bienvenue sur votre site de création de quiz en ligne</h1>
         <h2>Commencez dès maintenant en créant votre Quiz</h2>
         <a href="{{ path('create') }}"><button type="button" class="btn btn-primary btn-creation">Créer un questionnaire</button></a>
-
-
-        {% if not app.user %}
-        <a href="{{ path('security_login') }}"><button type="button" class="btn btn-primary btn-creation">Connexion</button></a>
-        {% else %}
-        <a href="{{ path('security_logout') }}"><button type="button" class="btn btn-primary btn-creation">Deconnexion</button></a>
-        {% endif %}
     </div>
 {% endblock %}

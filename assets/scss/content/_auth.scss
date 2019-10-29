@@ -1,0 +1,34 @@
+.auth {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+
+    form {
+        width: 70%
+    }
+
+    h1 {
+        margin-bottom: 2rem;
+    }
+
+    .test {
+        background-color: red;
+    }
+
+    .btn-form-auth {
+        display: flex;
+        justify-content: flex-end;
+
+        .btn-auth {
+            font-size: 1.2rem;
+            margin: 2rem 0;
+        }
+    }
+
+    input {
+        color: $dark-blue;
+        font-size: 1.2rem;
+    }
+}
