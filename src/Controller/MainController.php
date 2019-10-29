@@ -93,7 +93,8 @@ class MainController extends AbstractController
         }
 
         return $this->render('quiz/create_question.html.twig', [
-            'formQuizQuestion' => $form->createView()
+            'formQuizQuestion' => $form->createView(),
+            'quiz' => $quiz
         ]);    
     }
 
@@ -151,8 +152,4 @@ class MainController extends AbstractController
             'controller_name' => 'MainController',
         ]);    
     }
-
-    /**
-     * 
-     */
 }

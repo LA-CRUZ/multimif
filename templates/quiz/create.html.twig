@@ -13,7 +13,12 @@
         <h1>Création de votre Quiz</h1>
         {{ form_start(formQuiz) }}
 
-        {{ form_widget(formQuiz)}}
+        {{ form_row(formQuiz.titre) }}
+        {{ form_row(formQuiz.description) }}
+
+        <div class="btn-form">
+            {{ form_row(formQuiz.Suivant) }}
+        </div>
 
         {{ form_end(formQuiz) }}
     </div>
