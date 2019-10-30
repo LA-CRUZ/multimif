@@ -1,0 +1,25 @@
+{% extends 'layout.html.twig' %}
+
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block menu %}
+    {% include "_menu.html.twig" with {
+        'active': 'home'
+    } %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="auth">
+        <h1>Inscrivez vous</h1>
+        {{form_start(form) }}
+        {{form_row(form.username, {'label':'Nom d\'utilisateur','attr':{'placeholder' : 'Nom d\'utilisateur'}})}}
+        {{form_row(form.email,    {'label':'Adresse email','attr':{'placeholder' : 'Adresse email'}})}}
+        {{form_row(form.password, {'label':'Mot de Passe', 'attr':{'placeholder' : 'Mot de Passe'}})}}
+        {{form_row(form.confirm_password, {'label':'Confirmer votre Mot de passe', 'attr':{'placeholder' : 'confirmer'}})}}
+
+        <div class="btn-form-auth">
+            <button type="submit" class ="btn btn-success btn-auth">Valider</button>
+        </div>
+        {{form_end(form)}}
+    </div>
+{% endblock %}

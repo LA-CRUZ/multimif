@@ -1,41 +1,122 @@
-.create-question {
+.content {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    padding-top: 3rem;
 
-    form {
-        width: 70%
-    }
-
-    h1 {
-        text-align: center;
-        margin: 2rem;
-    }
-
-    input {
-        color: $dark-blue;
-        font-size: 1.2rem;
-    }
-
-    hr {
-        color: white;
-        height: 1rem;
-    }
-
-    .form-check-label {
-        font-size: 1.2rem;
-    }
-
-    .btn-form {
+    .create-question {
         display: flex;
-        justify-content: flex-end;
+        flex-direction: column;
+        align-items: center;
+        width: 49%;
+    
+        form {
+            width: 70%
+        }
+    
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
 
-        .btn-question {
+        }
+        
+        h1.test {
+            font-size: 1.5rem;
+        }
+
+        input {
+            color: $dark-blue;
             font-size: 1.2rem;
-            text-transform: uppercase;
-            margin: 1rem;
+        }
+    
+        hr {
+            color: white;
+            height: 1rem;
+        }
+    
+        .form-check-label {
+            font-size: 1.2rem;
+        }
+    
+        .btn-form {
+            display: flex;
+            justify-content: flex-end;
+    
+            .btn-question {
+                font-size: 1.2rem;
+                margin: 1rem 0 2rem 2rem;
+            }
         }
     }
 
+    .separator {
+        width: 2%;
+
+        hr {
+            width: 2px;
+            background-color: white;
+            height: 90%;
+        }
+    }
+    
+    .preview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 49%;
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+
+            &::first-letter {
+                text-transform: uppercase;
+            }
+        }
+
+        hr {
+            height: 1px;
+            background-color: white;
+            width: 80%;
+            margin: 2rem;
+        }
+    
+        p { 
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+
+            &::first-letter {
+                text-transform: uppercase;
+            }
+        }
+
+        ul {
+            text-align: left;
+            width: 80%;
+    
+            .question {
+                font-size: 1.3rem;
+                color: white;
+                border: 2px solid white;
+                border-radius: 10px;
+                padding: 1rem;
+    
+                &::first-letter {
+                    text-transform: uppercase;
+                }
+            }
+    
+            .reponse {
+                margin-left: 3rem;
+                font-size: 1.3rem;
+                color : white;
+                padding: 1rem 0;
+
+                input {
+                    margin: 0.5rem;
+                }
+            }
+        }
+    }
 }

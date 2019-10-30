@@ -1,4 +1,4 @@
-.create-quiz {
+.auth {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,11 +13,15 @@
         margin-bottom: 2rem;
     }
 
-    .btn-form {
+    .test {
+        background-color: red;
+    }
+
+    .btn-form-auth {
         display: flex;
         justify-content: flex-end;
 
-        .btn-question {
+        .btn-auth {
             font-size: 1.2rem;
             margin: 2rem 0;
         }

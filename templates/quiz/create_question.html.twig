@@ -9,24 +9,47 @@
 {% endblock %}
 
 {% block main_content %}
-    <div class="create-question">
-        <h1>Entrez une question</h1>
-        {{ form_start(formQuizQuestion) }}
-        
-        {{ form_widget(formQuizQuestion.texte)}}
-        <br><br><br>
-        <h1>Entrez les réponses associées</h1>
-        {% for reponse in formQuizQuestion.reponses %}
-            {{ form_row(reponse.texte) }}
-            {{ form_row(reponse.juste) }}
-            <hr>
-        {% endfor %}
+    <div class="content">
+        <div class="create-question">
+            <h1>Entrez une question</h1>
+            {{ form_start(formQuizQuestion) }}
+            
+            {{ form_widget(formQuizQuestion.texte)}}
+            <br><br><br>
+            <h1 class="test">Entrez les réponses associées</h1>
+            {% for reponse in formQuizQuestion.reponses %}
+                {{ form_row(reponse.texte) }}
+                {{ form_row(reponse.juste) }}
+                <br><br>
+            {% endfor %}
 
-        <div class="btn-form">
-            {{ form_row(formQuizQuestion.add) }}
-            {{ form_row(formQuizQuestion.end) }}
+            <div class="btn-form">
+                {{ form_row(formQuizQuestion.add) }}
+                {{ form_row(formQuizQuestion.end) }}
+            </div>
+
+            {{ form_end(formQuizQuestion) }}
         </div>
-
-        {{ form_end(formQuizQuestion) }}
+        <div class="separator">
+            <hr>
+        </div>
+        <div class="preview">
+            <h1>Aperçu de votre quiz</h1>
+            <hr>
+            <h1> {{ quiz.titre }} </h1>
+            <p>  {{ quiz.description }} </p>
+            <ul>
+                {% for question in quiz.questions %}
+                <li class="question"> {{question.texte}} </li>
+                <br>
+                    <ul>
+                        {% for reponse in question.reponses %}
+                            <li class="reponse"><input type="checkbox" disabled=true> {{ reponse.texte }} </li>
+                        {% endfor %}
+                    </ul>
+                    <br><br>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}

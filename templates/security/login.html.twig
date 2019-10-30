@@ -1,0 +1,26 @@
+{% extends 'layout.html.twig' %}
+
+{% block menu %}
+    {% include "_menu.html.twig" with {
+        'active': 'home'
+    } %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="auth">
+        <h1>Connexion</h1>
+        <form action="{{ path('security_login') }}" method="post">
+            <div class="form-group">
+                <label for="">Adresse email</label>
+                <input placeholder="Adresse email ..." required name="_username" type="text" class="form-control">
+            </div>
+            <div>
+                <label for="">Mot de passe</label>
+                <input placeholder="Mot de Passe" required name="_password" type="password" class="form-control">
+            </div>
+            <div class="btn-form-auth">
+                <button type="submit" class="btn btn-success btn-auth">Se connecter</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
