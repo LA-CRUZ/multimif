@@ -149,4 +149,18 @@ class MainController extends AbstractController
             'controller_name' => 'MainController',
         ]);    
     }
+
+    /**
+    * @Route("/answer_quiz/{id}", name="answer_quiz")
+     */
+    public function answer($id)
+    {
+        $repo = $this->getDoctrine()->getRepository(Quiz::class);
+
+        $quiz = $repo->find($id);
+        return $this->render('quiz/answer_quiz.html.twig', [
+            'controller_name' => 'MainController',
+            'quiz' => $quiz
+        ]);    
+    }
 }
