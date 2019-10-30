@@ -15,9 +15,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-/**
- * @Route("/{_locale}")
- */
 class MainController extends AbstractController
 {
     /**
@@ -93,7 +90,8 @@ class MainController extends AbstractController
         }
 
         return $this->render('quiz/create_question.html.twig', [
-            'formQuizQuestion' => $form->createView()
+            'formQuizQuestion' => $form->createView(),
+            'quiz' => $quiz
         ]);    
     }
 
@@ -151,8 +149,4 @@ class MainController extends AbstractController
             'controller_name' => 'MainController',
         ]);    
     }
-
-    /**
-     * 
-     */
 }

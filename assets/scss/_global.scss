@@ -16,10 +16,19 @@ body {
     background-image: url(../images/board.jpg);
     background-size: cover;
     background-repeat: no-repeat;
+    margin-top: 3rem;
 }
 
 label  {
     color: white;
     font-size: 1rem;
     margin-bottom: 1rem;
+}
+
+.navbar {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10; 
 }

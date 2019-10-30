@@ -6,4 +6,11 @@
             </a>
         </li>
     {% endfor %}
+    <li class="nav-item">
+        {% if not app.user %}
+            <a href="{{ path('security_login') }}" class="nav-link">Connexion</a>
+        {% else %}
+            <a href="{{ path('security_logout') }}" class="nav-link">Deconnexion</a>
+        {% endif %}
+    </li>
 </ul>
