@@ -6,11 +6,17 @@
             </a>
         </li>
     {% endfor %}
+    
+    {% if not app.user %}
     <li class="nav-item">
-        {% if not app.user %}
-            <a href="{{ path('security_login') }}" class="nav-link">Connexion</a>
-        {% else %}
-            <a href="{{ path('security_logout') }}" class="nav-link">Deconnexion</a>
-        {% endif %}
+        <a href="{{ path('security_registration') }}" class="nav-link">Inscription</a>
     </li>
+    <li class="nav-item">
+        <a href="{{ path('security_login') }}" class="nav-link">Connexion</a>
+    </li>
+    {% else %}
+    <li class="nav-item">
+        <a href="{{ path('security_logout') }}" class="nav-link">Deconnexion</a>
+    </li>
+    {% endif %}
 </ul>
