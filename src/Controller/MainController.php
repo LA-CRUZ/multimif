@@ -160,7 +160,6 @@ class MainController extends AbstractController
         }else{
             $id= -1;
         }
-
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
         $quiz = $repo->find($id);
 
