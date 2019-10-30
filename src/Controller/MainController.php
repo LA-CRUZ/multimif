@@ -3,9 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Quiz;
-use App\Form\QuizType;
 use App\Entity\Reponse;
 use App\Entity\Question;
+use App\Entity\Result;
+use App\Form\QuizType;
 use App\Form\ReponseType;
 use App\Form\QuestionType;
 use Symfony\Component\HttpFoundation\Request;
@@ -143,10 +144,27 @@ class MainController extends AbstractController
     /**
     * @Route("/statistique/{id}", name="create_quiz")
      */
-    public function stat()
+    public function stat($id)
     {
+        $repoQuiz = $this->getDoctrine()->getRepository(Quiz::class);
+        $repoRes = $this->getDoctrine()->getRepository(Result::class);
+        $quiz = $repoQuiz->find($id);
+
+        
+        foreach ($quiz->getQuestions() as $question){
+            $resultQuestion = $repoRes->findByquestion($question->getId());
+            $nb_participant = count($resultQuestion);
+            foreach($question->getReponses() as $reponse){
+                $result = $repoRes->findByresponse($reponse->getId());
+                $stat[$reponse->getId()] = (count($result)*100)/$nb_participant;
+            }
+
+        }
+
         return $this->render('quiz/statistique.html.twig', [
             'controller_name' => 'MainController',
+            'stat' => $stat,
+            'quiz' => $quiz
         ]);    
     }
 
