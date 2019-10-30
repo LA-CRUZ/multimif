@@ -96,24 +96,31 @@ class MainController extends AbstractController
     }
 
     /**
+     * @Route("/remove/{id}", name="remove-quiz")
+     */
+    public function removeQuiz(Request $request, ObjectManager $manager, $id){
+        $quiz = $manager->getRepository(Quiz::class)->find($id);
+
+        $manager->remove($quiz);
+        $manager->flush();
+
+        return $this->redirectToRoute('quiz');
+    }
+
+    /**
      * @Route("/quiz", name="quiz")
      * 
      */
+    public function show_quiz_list(){
+        $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
-     public function show_quiz_list(){
-         $repo = $this->getDoctrine()->getRepository(Quiz::class);
+        $quiz_list = $repo->findAll();
 
-         $quiz_list = $repo->findAll();
-         if(!$quiz_list){
-             throw $this->createNotFoundException('No quiz found');
-         }
-
-         return $this->render('quiz/quiz_list.html.twig', [
-             'controller_name' => 'MainController',
-             'quiz_list' => $quiz_list
-         ]);
-         
-     }
+        return $this->render('quiz/quiz_list.html.twig', [
+            'controller_name' => 'MainController',
+            'quiz_list' => $quiz_list
+        ]);
+    }
  
     /**
      * @Route("/quiz/{id}", name="show_quiz")
