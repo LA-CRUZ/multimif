@@ -8,6 +8,7 @@ twig:
             - { label: 'Accueil', route: 'home' }
             - { label: 'Créer un quiz', route: 'create' }
             - { label: 'Liste des quiz', route: 'quiz' }
+            - { label: 'Recherche', route: 'search_quiz' }
             # - { label: 'Mon compte', route: '' }
             # - { label: 'Inscription', route: '' }
             # - { label: 'Connexion', route: '' }
