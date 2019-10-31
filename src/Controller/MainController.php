@@ -100,24 +100,42 @@ class MainController extends AbstractController
     }
 
     /**
-     * @Route("/quiz", name="quiz")
-     * 
+     * @Route("/remove/{id}", name="remove-quiz")
      */
+    public function removeQuiz(Request $request, ObjectManager $manager, $id){
+        $quiz = $manager->getRepository(Quiz::class)->find($id);
 
-     public function show_quiz_list(){
-         $repo = $this->getDoctrine()->getRepository(Quiz::class);
+        $manager->remove($quiz);
+        $manager->flush();
 
-         $quiz_list = $repo->findAll();
-         if(!$quiz_list){
-             throw $this->createNotFoundException('No quiz found');
-         }
+        return $this->redirectToRoute('quiz');
+    }
 
-         return $this->render('quiz/quiz_list.html.twig', [
-             'controller_name' => 'MainController',
-             'quiz_list' => $quiz_list
-         ]);
-         
-     }
+    /**
+     * @Route("/edit/{id}", name="edit-quiz")
+     */
+    public function editQuiz(Request $request, ObjectManager $manager, $id){
+        $quiz = $manager->getRepository(Quiz::class)->find($id);
+
+        return $this->render('quiz/edit_quiz.html.twig', [
+            'controller_name' => 'MainController',
+            'quiz' => $quiz
+        ]);
+    }
+
+    /**
+     * @Route("/quiz", name="quiz")
+     */
+    public function show_quiz_list(){
+        $repo = $this->getDoctrine()->getRepository(Quiz::class);
+
+        $quiz_list = $repo->findAll();
+
+        return $this->render('quiz/quiz_list.html.twig', [
+            'controller_name' => 'MainController',
+            'quiz_list' => $quiz_list
+        ]);
+    }
  
     /**
      * @Route("/quiz/{id}", name="show_quiz")
@@ -145,7 +163,7 @@ class MainController extends AbstractController
     }
 
     /**
-    * @Route("/statistique/{id}", name="create_quiz")
+     * @Route("/statistique/{id}", name="create_quiz")
      */
     public function stat()
     {
@@ -183,6 +201,38 @@ class MainController extends AbstractController
         return $this->render('quiz/answer_quiz.html.twig', [
             'formAnswer' => $form->createView(),
             'quiz' => $quiz,
-        ]);    
+        ]);
+    }
+
+    /**   
+     * @Route("/remove_question/{id}", name="remove-question")
+     */
+    public function removeQuestion(Request $request, ObjectManager $manager, $id){
+        $question = $manager->getRepository(Question::class)->find($id);
+        $quiz = $question->getQuiz();
+
+        $manager->remove($question);
+        $manager->flush();
+
+        return $this->redirectToRoute('edit-quiz', [ 'id' => $quiz->getId()]);
+    }
+    
+    /**
+     * @Route("/search", name="search_quiz")
+     */
+    public function search()
+    {
+        $id = isset($_POST['id_quiz']) ? $_POST['id_quiz'] : -1 ;
+
+        $repo = $this->getDoctrine()->getRepository(Quiz::class);
+        $quiz = $repo->find($id);
+
+        if(!$quiz){
+            return $this->render('quiz/search_quiz.html.twig', [
+                'controller_name' => 'MainController',
+            ]);  
+        }else{
+            return $this->redirectToRoute('show_quiz', ['id' => $id]);   
+        }          
     }
 }
