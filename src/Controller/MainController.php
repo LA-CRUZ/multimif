@@ -6,14 +6,18 @@ use App\Entity\Quiz;
 use App\Form\QuizType;
 use App\Entity\Reponse;
 use App\Entity\Question;
+use App\Entity\Result;
 use App\Form\ReponseType;
 use App\Form\QuestionType;
+use App\Form\ResultType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+
 
 class MainController extends AbstractController
 {
@@ -153,14 +157,32 @@ class MainController extends AbstractController
     /**
     * @Route("/answer_quiz/{id}", name="answer_quiz")
      */
-    public function answer($id)
+    public function answer(Request $request, ObjectManager $manager, $id)
     {
-        $repo = $this->getDoctrine()->getRepository(Quiz::class);
+        $quiz = $this->getDoctrine()->getRepository(Quiz::class)->find($id);
+        $form = $this->createForm(ResultType::class);
+        $resultArray = [];
+        foreach($quiz->getQuestions() as $question) {
+            foreach($question->getReponses() as $reponse) {
+                $stringId = strval($reponse->getId());
+                if($request->request->get($stringId) != null) {
+                    $result = new Result();
+                    $result->setUser($this->getUser());
+                    $result->setResponse($reponse);
+                    array_push($resultArray, $result);
+                }
+            }
+        }
+        
+        foreach($resultArray as $result) {
+            $manager->persist($result);
+        }
 
-        $quiz = $repo->find($id);
+        $manager->flush();
+
         return $this->render('quiz/answer_quiz.html.twig', [
-            'controller_name' => 'MainController',
-            'quiz' => $quiz
+            'formAnswer' => $form->createView(),
+            'quiz' => $quiz,
         ]);    
     }
 }
