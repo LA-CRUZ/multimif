@@ -155,11 +155,8 @@ class MainController extends AbstractController
      */
     public function search()
     {
-        if (isset($_POST['id_quiz'])) {
-            $id = $_POST['id_quiz'];
-        }else{
-            $id= -1;
-        }
+        $id = isset($_POST['id_quiz']) ? $_POST['id_quiz'] : -1 ;
+
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
         $quiz = $repo->find($id);
 
@@ -168,10 +165,7 @@ class MainController extends AbstractController
                 'controller_name' => 'MainController',
             ]);  
         }else{
-            return $this->render('quiz/quiz.html.twig', [
-                'controller_name' => 'MainController',
-                'quiz' => $quiz
-            ]);    
+            return $this->redirectToRoute('show_quiz', ['id' => $id]);   
         }          
     }
 }
