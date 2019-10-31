@@ -21,4 +21,30 @@
             color: $blue;
         }
     }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+
+        form {
+            width: 50%;
+            
+            input {
+                margin: 2rem 0;
+                font-size: 2rem;
+                text-align: center;
+
+                &::placeholder {
+                    font-size: 2rem;
+                }
+            }
+        }
+
+        .btn-create {
+            width: 100%;
+            font-size: 1.5rem;
+        }
+    }
 }
