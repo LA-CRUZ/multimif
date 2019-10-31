@@ -1,0 +1,19 @@
+{% extends 'layout.html.twig' %}
+
+{% block menu %}
+    {% include "_menu.html.twig" with {
+        'active': 'home'
+    } %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="intro">
+        <h1>Rechercher un quiz :</h1>
+             <div class="search-container">
+                <form action="/search" method="post">
+                <input type="text" placeholder="Search.." name="id_quiz">
+                <button type="submit"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+    </div>
+{% endblock %}
