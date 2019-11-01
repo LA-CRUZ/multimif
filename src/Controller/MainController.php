@@ -198,10 +198,15 @@ class MainController extends AbstractController
 
         $manager->flush();
 
-        return $this->render('quiz/answer_quiz.html.twig', [
-            'formAnswer' => $form->createView(),
-            'quiz' => $quiz,
-        ]);
+        if(sizeof($resultArray) != 0) {
+            return $this->redirectToRoute('search_quiz');
+        } else {
+            return $this->render('quiz/answer_quiz.html.twig', [
+                'formAnswer' => $form->createView(),
+                'quiz' => $quiz,
+            ]);
+        }
+
     }
 
     /**   
@@ -232,7 +237,7 @@ class MainController extends AbstractController
                 'controller_name' => 'MainController',
             ]);  
         }else{
-            return $this->redirectToRoute('show_quiz', ['id' => $id]);   
+            return $this->redirectToRoute('answer_quiz', ['id' => $id]);   
         }          
     }
 }
