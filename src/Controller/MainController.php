@@ -10,6 +10,7 @@ use App\Entity\Result;
 use App\Form\ReponseType;
 use App\Form\QuestionType;
 use App\Form\ResultType;
+use App\Repository\QuestionRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
@@ -222,6 +223,36 @@ class MainController extends AbstractController
         return $this->redirectToRoute('edit-quiz', [ 'id' => $quiz->getId()]);
     }
     
+    /**   
+     * @Route("/edit_question/{id}", name="edit-question")
+     */
+    public function editQuestion(Request $request, ObjectManager $manager, $id){
+        
+        $question = $manager->getRepository(Question::class)->find($id);
+        $idQuiz = $question->getQuiz()->getId();
+        $quiz = $manager->getRepository(Quiz::class)->find($idQuiz);
+        
+        $form = $this->createForm(QuestionType::class, $question);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $manager->flush();
+
+            if($form->get('add')->isClicked())
+            {
+                return $this->redirectToRoute('create_question', ['id' => $idQuiz]);
+            } else {
+                return $this->redirectToRoute('show_quiz', ['id' => $idQuiz]);
+            }
+        }
+
+        return $this->render('quiz/create_question.html.twig', [
+            'formQuizQuestion' => $form->createView(),
+            'quiz' => $quiz
+        ]);
+    }
+
     /**
      * @Route("/search", name="search_quiz")
      */
