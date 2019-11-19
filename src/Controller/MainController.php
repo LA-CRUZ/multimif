@@ -137,6 +137,10 @@ class MainController extends AbstractController
             'quiz_list' => $quiz_list
         ]);
     }
+
+    public function numhash($n) {
+        return (((0x0000FFFF & $n) << 16) + ((0xFFFF0000 & $n) >> 16));
+    }    
  
     /**
      * @Route("/quiz/{id}", name="show_quiz")
@@ -146,10 +150,11 @@ class MainController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz = $repo->find($id);
-        
+        $idHash = $this->numhash($id);
         return $this->render('quiz/quiz.html.twig', [
             'controller_name' => 'MainController',
-            'quiz' => $quiz
+            'quiz' => $quiz,
+            'codeHash' => $idHash
         ]);    
     }
     
@@ -202,9 +207,11 @@ class MainController extends AbstractController
         if(sizeof($resultArray) != 0) {
             return $this->redirectToRoute('search_quiz');
         } else {
+            $idHash = $this->numhash($id);
             return $this->render('quiz/answer_quiz.html.twig', [
                 'formAnswer' => $form->createView(),
                 'quiz' => $quiz,
+                'codeHash' => $idHash
             ]);
         }
 
@@ -258,7 +265,8 @@ class MainController extends AbstractController
      */
     public function search()
     {
-        $id = isset($_POST['id_quiz']) ? $_POST['id_quiz'] : -1 ;
+        $idHash = isset($_POST['id_quiz']) ? $_POST['id_quiz'] : -1 ;
+        $id = $this->numhash($idHash);
 
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
         $quiz = $repo->find($id);
