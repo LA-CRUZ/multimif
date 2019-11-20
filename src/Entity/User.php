@@ -48,6 +48,11 @@ class User implements UserInterface
      */
     public $confirm_password;
 
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $roles = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,7 +99,25 @@ class User implements UserInterface
     public function getSalt () {}
 
     public function getRoles () {
-        return ['ROLE_USER'];
+        $roles = $this->roles;
+        //On ne set plus par défaut le ROLE_USER ici car c'est géré dans le contrôleur à l'inscription
+        return array_unique($roles);
     }
 
+    public function addRole (string $role) {
+        $role = strtoupper($role);
+
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+    
+        return $this;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+    
 }
