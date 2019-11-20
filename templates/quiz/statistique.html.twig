@@ -20,10 +20,15 @@
                     <ul>
                         {% for reponse in question.reponses %}
                             <li class="reponse"><input type="checkbox" disabled=true> {{ reponse.texte }} </li>
-                            <p{%if reponse.juste == true %} style="color:green" 
-                            {% else %}
-                            style ="color:red"
-                            {% endif %}> {{stat[reponse.id]}} %</p>
+                            <div class="stat-slider">
+                                <span>
+                                    <span style="color: {{reponse.juste ? "#6BB438" : "#b84444"}}">{{stat[reponse.id]}} %</span> des votes.
+                                    ({{nbRes[reponse.id]}}/{{total}})
+                                </span>
+                                <div class="meter"> 
+                                    <span style="width: {{stat[reponse.id]}}%; background-color: {{reponse.juste ? "#6BB438" : "#b84444"}}"></span>
+                                </div>
+                            </div>
                         {% endfor %}
                     </ul>
                     <br><br>

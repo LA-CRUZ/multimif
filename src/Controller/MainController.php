@@ -173,6 +173,7 @@ class MainController extends AbstractController
 
         $total_reponse = 0;
         foreach ($quiz->getQuestions() as $question){
+            $total_reponse = 0;
             foreach($question->getReponses() as $reponse){
                 $id_res[] = $reponse->getId(); 
                 $result = $repoRes->findByresponse($reponse->getId());
@@ -180,15 +181,15 @@ class MainController extends AbstractController
                 $total_reponse += count($result);
             }
             foreach($id_res as $idReponse){
+                $nbRes[$idReponse] = $stat[$idReponse];
                 $stat[$idReponse] = ($stat[$idReponse]*100) / $total_reponse;
             }
-            reset($id_res);
-            $total_reponse = 0;
-
         }
 
         return $this->render('quiz/statistique.html.twig', [
             'controller_name' => 'MainController',
+            'total' => $total_reponse,
+            'nbRes' => $nbRes,
             'stat' => $stat,
             'quiz' => $quiz
         ]);    
