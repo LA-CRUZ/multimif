@@ -8,17 +8,15 @@
 
 {% block main_content %}
     <div class="intro">
-        <div class="intro">
-            <h1>Bienvenue sur votre site de quiz en ligne</h1>
-            <h2>Commencez dès maintenant en répondant à un Quiz</h2>
-             <div class="search-container">
-                <form action="/search" method="post">
-                    <div class="form-group">
-                        <input type="text" placeholder="Entrez le code du quiz.." name="id_quiz" class="form-control">
-                        <button type="submit" class="btn btn-success btn-create">Go !</button>
-                    </div>
-                </form>
-            </div>
+        <h1>Bienvenue sur votre site de quiz en ligne</h1>
+        <h2>Commencez dès maintenant en répondant à un Quiz</h2>
+            <div class="search-container">
+            <form action="/search" method="post">
+                <div class="form-group">
+                    <input type="text" placeholder="Entrez le code du quiz.." name="id_quiz" class="form-control">
+                    <button type="submit" class="btn btn-success btn-create">Répondre au Quiz</button>
+                </div>
+            </form>
         </div>
     </div>
 {% endblock %}

@@ -91,5 +91,16 @@
 
             }
         }
+
+        .form-btn {
+            display: flex;
+            justify-content: flex-end;
+
+            .btn-validate {
+                font-size: 1.5rem;
+                padding: 1rem 1rem;
+            }
+        }
+        
     }
 }
