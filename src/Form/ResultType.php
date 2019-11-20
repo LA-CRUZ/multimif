@@ -14,8 +14,8 @@ class ResultType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('OK', SubmitType::class, [
-                'attr' => ['class' => 'btn btn-success btn-question'],
+            ->add('Valider', SubmitType::class, [
+                'attr' => ['class' => 'btn btn-success btn-validate'],
             ]);
     }
 

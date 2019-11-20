@@ -10,6 +10,7 @@ use App\Form\QuizType;
 use App\Form\ReponseType;
 use App\Form\QuestionType;
 use App\Form\ResultType;
+use App\Repository\QuestionRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Routing\Annotation\Route;
@@ -136,6 +137,10 @@ class MainController extends AbstractController
             'quiz_list' => $quiz_list
         ]);
     }
+
+    public function numhash($n) {
+        return (((0x0000FFFF & $n) << 16) + ((0xFFFF0000 & $n) >> 16));
+    }    
  
     /**
      * @Route("/quiz/{id}", name="show_quiz")
@@ -145,10 +150,11 @@ class MainController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz = $repo->find($id);
-        
+        $idHash = $this->numhash($id);
         return $this->render('quiz/quiz.html.twig', [
             'controller_name' => 'MainController',
-            'quiz' => $quiz
+            'quiz' => $quiz,
+            'codeHash' => $idHash
         ]);    
     }
     
@@ -225,10 +231,17 @@ class MainController extends AbstractController
 
         $manager->flush();
 
-        return $this->render('quiz/answer_quiz.html.twig', [
-            'formAnswer' => $form->createView(),
-            'quiz' => $quiz,
-        ]);
+        if(sizeof($resultArray) != 0) {
+            return $this->redirectToRoute('search_quiz');
+        } else {
+            $idHash = $this->numhash($id);
+            return $this->render('quiz/answer_quiz.html.twig', [
+                'formAnswer' => $form->createView(),
+                'quiz' => $quiz,
+                'codeHash' => $idHash
+            ]);
+        }
+
     }
 
     /**   
@@ -244,12 +257,43 @@ class MainController extends AbstractController
         return $this->redirectToRoute('edit-quiz', [ 'id' => $quiz->getId()]);
     }
     
+    /**   
+     * @Route("/edit_question/{id}", name="edit-question")
+     */
+    public function editQuestion(Request $request, ObjectManager $manager, $id){
+        
+        $question = $manager->getRepository(Question::class)->find($id);
+        $idQuiz = $question->getQuiz()->getId();
+        $quiz = $manager->getRepository(Quiz::class)->find($idQuiz);
+        
+        $form = $this->createForm(QuestionType::class, $question);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $manager->flush();
+
+            if($form->get('add')->isClicked())
+            {
+                return $this->redirectToRoute('create_question', ['id' => $idQuiz]);
+            } else {
+                return $this->redirectToRoute('show_quiz', ['id' => $idQuiz]);
+            }
+        }
+
+        return $this->render('quiz/create_question.html.twig', [
+            'formQuizQuestion' => $form->createView(),
+            'quiz' => $quiz
+        ]);
+    }
+
     /**
      * @Route("/search", name="search_quiz")
      */
     public function search()
     {
-        $id = isset($_POST['id_quiz']) ? $_POST['id_quiz'] : -1 ;
+        $idHash = isset($_POST['id_quiz']) ? $_POST['id_quiz'] : -1 ;
+        $id = $this->numhash($idHash);
 
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
         $quiz = $repo->find($id);
@@ -259,7 +303,7 @@ class MainController extends AbstractController
                 'controller_name' => 'MainController',
             ]);  
         }else{
-            return $this->redirectToRoute('show_quiz', ['id' => $id]);   
+            return $this->redirectToRoute('answer_quiz', ['id' => $id]);   
         }          
     }
 }
