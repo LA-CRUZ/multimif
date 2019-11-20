@@ -12,7 +12,7 @@ use App\Form\QuestionType;
 use App\Form\ResultType;
 use App\Repository\QuestionRepository;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -35,8 +35,10 @@ class MainController extends AbstractController
     /**
      * @Route("/create", name="create")
      */
-    public function create(Request $request, ObjectManager $manager)
+    public function create(Request $request)
     {
+        $manager = $this->getDoctrine()->getManager();
+
         $quiz = new Quiz();
         
         $form = $this->createForm(QuizType::class, $quiz);
@@ -58,8 +60,10 @@ class MainController extends AbstractController
     /**
      * @Route("/create_question/{id}", name="create_question")
      */
-    public function createQuestion(Request $request, ObjectManager $manager, $id)
+    public function createQuestion(Request $request, $id)
     {
+        $manager = $this->getDoctrine()->getManager();
+
         $question = new Question();
         $quiz = $manager->getRepository(Quiz::class)->find($id);
 
@@ -103,7 +107,10 @@ class MainController extends AbstractController
     /**
      * @Route("/remove/{id}", name="remove-quiz")
      */
-    public function removeQuiz(Request $request, ObjectManager $manager, $id){
+    public function removeQuiz(Request $request, $id){
+        
+        $manager = $this->getDoctrine()->getManager();
+
         $quiz = $manager->getRepository(Quiz::class)->find($id);
 
         $manager->remove($quiz);
@@ -115,7 +122,9 @@ class MainController extends AbstractController
     /**
      * @Route("/edit/{id}", name="edit-quiz")
      */
-    public function editQuiz(Request $request, ObjectManager $manager, $id){
+    public function editQuiz(Request $request, $id){
+        $manager = $this->getDoctrine()->getManager();
+
         $quiz = $manager->getRepository(Quiz::class)->find($id);
 
         return $this->render('quiz/edit_quiz.html.twig', [
@@ -209,8 +218,10 @@ class MainController extends AbstractController
     /**
     * @Route("/answer_quiz/{id}", name="answer_quiz")
      */
-    public function answer(Request $request, ObjectManager $manager, $id)
+    public function answer(Request $request, $id)
     {
+        $manager = $this->getDoctrine()->getManager();
+
         $quiz = $this->getDoctrine()->getRepository(Quiz::class)->find($id);
         $form = $this->createForm(ResultType::class);
         $resultArray = [];
@@ -248,7 +259,9 @@ class MainController extends AbstractController
     /**   
      * @Route("/remove_question/{id}", name="remove-question")
      */
-    public function removeQuestion(Request $request, ObjectManager $manager, $id){
+    public function removeQuestion(Request $request, $id){
+        $manager = $this->getDoctrine()->getManager();
+
         $question = $manager->getRepository(Question::class)->find($id);
         $quiz = $question->getQuiz();
 
@@ -261,7 +274,8 @@ class MainController extends AbstractController
     /**   
      * @Route("/edit_question/{id}", name="edit-question")
      */
-    public function editQuestion(Request $request, ObjectManager $manager, $id){
+    public function editQuestion(Request $request, $id){
+        $manager = $this->getDoctrine()->getManager();
         
         $question = $manager->getRepository(Question::class)->find($id);
         $idQuiz = $question->getQuiz()->getId();
