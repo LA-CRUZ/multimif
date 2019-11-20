@@ -179,6 +179,7 @@ class MainController extends AbstractController
 
         $total_reponse = 0;
         foreach ($quiz->getQuestions() as $question){
+            $total_reponse = 0;
             foreach($question->getReponses() as $reponse){
                 $id_res[$reponse->getId()] = $reponse->getId(); 
                 $result = $repoRes->findByresponse($reponse->getId());
