@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Quiz;
-use App\Form\QuizType;
 use App\Entity\Reponse;
 use App\Entity\Question;
 use App\Entity\Result;
+use App\Form\QuizType;
 use App\Form\ReponseType;
 use App\Form\QuestionType;
 use App\Form\ResultType;
@@ -171,10 +171,37 @@ class MainController extends AbstractController
     /**
      * @Route("/statistique/{id}", name="create_quiz")
      */
-    public function stat()
+    public function stat($id)
     {
+        $repoQuiz = $this->getDoctrine()->getRepository(Quiz::class);
+        $repoRes = $this->getDoctrine()->getRepository(Result::class);
+        $quiz = $repoQuiz->find($id);
+
+        $total_reponse = 0;
+        foreach ($quiz->getQuestions() as $question){
+            foreach($question->getReponses() as $reponse){
+                $id_res[$reponse->getId()] = $reponse->getId(); 
+                $result = $repoRes->findByresponse($reponse->getId());
+                $total_reponse += count($result);
+                $stat[$reponse->getId()] = count($result);
+            }
+            foreach($id_res as $i => $idReponse){
+                $pourcent[$idReponse] = round(($stat[$idReponse] / $total_reponse) * 100);
+            }
+            $total_idrep[$question->getId()] = $total_reponse;
+            $id_res = array();
+            $total_reponse = 0;
+
+        }
+        
         return $this->render('quiz/statistique.html.twig', [
             'controller_name' => 'MainController',
+            'stat' => $stat,
+            'quiz' => $quiz,
+            'total' => $total_idrep,
+            'id_res' => $id_res,
+            'pourcent' => $pourcent
+
         ]);    
     }
 

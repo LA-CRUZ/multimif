@@ -7,6 +7,32 @@
 {% endblock %}
 
 {% block main_content %}
-    {{ controller_name }}
-    Statistique
+    <div class="display-quiz">
+        <div class="bloc-quiz">
+        
+            <h1> {{ quiz.titre }} </h1>
+            <p>  {{ quiz.description }} </p>
+
+            <p class="share-code"> Code de partage : {{ quiz.id }}</p>
+            <ul>
+                {% for question in quiz.questions %}
+                <li class="question"> {{question.texte}} </li>
+                <br>
+                 <p> {{total[question.id]}} </p> 
+                 <br>
+                    <ul>
+                        {% for reponse in question.reponses %}
+                            <li class="reponse"><input type="checkbox" disabled=true> {{ reponse.texte }} </li>
+                            <p{%if reponse.juste == true %} style="color:green" 
+                            {% else %}
+                            style ="color:red"
+                            {% endif %}> {{ pourcent[reponse.id] }} %</p>
+
+                        {% endfor %} 
+                    </ul>
+                    <br><br>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}
