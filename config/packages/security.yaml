@@ -41,3 +41,4 @@ security:
         - { path: ^/edit, roles: ROLE_TEACHER }
         - { path: ^/remove, roles: ROLE_TEACHER }
         - { path: ^/statistique, roles: ROLE_TEACHER }
+        - { path: ^/search, roles: ROLE_USER }
