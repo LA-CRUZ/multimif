@@ -154,7 +154,7 @@ class MainController extends AbstractController
     /**
      * @Route("/quiz/{id}", name="show_quiz")
      */
-    public function quiz ($id)
+    public function quiz($id)
     {
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
