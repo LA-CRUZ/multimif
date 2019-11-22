@@ -185,6 +185,7 @@ class MainController extends AbstractController
         $repoQuiz = $this->getDoctrine()->getRepository(Quiz::class);
         $repoRes = $this->getDoctrine()->getRepository(Result::class);
         $quiz = $repoQuiz->find($id);
+        $idHash = $this->numhash($id);
 
         $total_reponse = 0;
         foreach ($quiz->getQuestions() as $question){
@@ -196,23 +197,33 @@ class MainController extends AbstractController
                 $stat[$reponse->getId()] = count($result);
             }
             foreach($id_res as $i => $idReponse){
+                $total_reponse = $total_reponse == null ? -1 : $total_reponse;
                 $pourcent[$idReponse] = round(($stat[$idReponse] / $total_reponse) * 100);
             }
             $total_idrep[$question->getId()] = $total_reponse;
             $id_res = array();
-            $total_reponse = 0;
-
         }
-        
-        return $this->render('quiz/statistique.html.twig', [
-            'controller_name' => 'MainController',
-            'stat' => $stat,
-            'quiz' => $quiz,
-            'total' => $total_idrep,
-            'id_res' => $id_res,
-            'pourcent' => $pourcent
 
-        ]);    
+        dump($total_reponse != -1);
+        dump(sizeof($quiz->getQuestions()));
+        if( sizeof($quiz->getQuestions()) != 0 && $total_reponse != -1) {
+            return $this->render('quiz/statistique.html.twig', [
+                'display' => true,
+                'controller_name' => 'MainController',
+                'stat' => $stat,
+                'quiz' => $quiz,
+                'total' => $total_idrep,
+                'id_res' => $id_res,
+                'pourcent' => $pourcent,
+                'codeHash' => $idHash
+            ]); 
+        } else {
+            return $this->render('quiz/statistique.html.twig', [
+                'display' => false,
+                'quiz' => $quiz,
+                'codeHash' => $idHash
+            ]);
+        }
     }
 
     /**
