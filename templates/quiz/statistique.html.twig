@@ -16,7 +16,7 @@
             <p class="share-code"> Code de partage : {{ codeHash }}</p>
             <ul>
             {% if not display %}
-                <p>Aucune statistique disponible</p>
+                <p>Aucune donnée statistique disponible</p>
             {% else %}
                 {% for question in quiz.questions %}
                 <li class="question"> {{question.texte}} </li>
