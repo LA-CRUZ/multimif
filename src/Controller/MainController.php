@@ -46,6 +46,7 @@ class MainController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
+            $quiz->setCreator($this->getUser());
             $manager->persist($quiz);
             $manager->flush();
 
@@ -139,7 +140,7 @@ class MainController extends AbstractController
     public function show_quiz_list(){
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
-        $quiz_list = $repo->findAll();
+        $quiz_list = $repo->findBycreator($this->getUser());
 
         return $this->render('quiz/quiz_list.html.twig', [
             'controller_name' => 'MainController',
