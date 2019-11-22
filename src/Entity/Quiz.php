@@ -34,9 +34,10 @@ class Quiz
     private $questions;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $deadLine;
+
 
     public function __construct()
     {
@@ -114,4 +115,5 @@ class Quiz
 
         return $this;
     }
+
 }

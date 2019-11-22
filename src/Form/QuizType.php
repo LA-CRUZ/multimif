@@ -8,6 +8,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class QuizType extends AbstractType
 {
@@ -27,6 +29,11 @@ class QuizType extends AbstractType
             ])
             ->add('Suivant', SubmitType::class, [
                 'attr' => ['class' => 'btn btn-success btn-question'],
+            ])
+            ->add('deadLine', DateTimeType::class, [
+                'attr' => [
+                    'placeholder' => 'Après cette date le quiz ne pourra plus être répondu (Non obligatoire)'
+                ]
             ])
         ;
     }

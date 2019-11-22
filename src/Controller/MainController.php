@@ -140,7 +140,7 @@ class MainController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz_list = $repo->findAll();
-
+        
         return $this->render('quiz/quiz_list.html.twig', [
             'controller_name' => 'MainController',
             'quiz_list' => $quiz_list
@@ -159,6 +159,7 @@ class MainController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz = $repo->find($id);
+        
         $idHash = $this->numhash($id);
         return $this->render('quiz/quiz.html.twig', [
             'controller_name' => 'MainController',
@@ -234,40 +235,50 @@ class MainController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = $this->getDoctrine()->getRepository(Quiz::class)->find($id);
-        $now = date("d/m/Y");
-        $test = new \DateTime();
-        
-        $form = $this->createForm(ResultType::class);
-        $resultArray = [];
-        foreach($quiz->getQuestions() as $question) {
-            foreach($question->getReponses() as $reponse) {
-                $stringId = strval($reponse->getId());
-                if($request->request->get($stringId) != null) {
-                    $result = new Result();
-                    $result->setUser($this->getUser());
-                    $result->setResponse($reponse);
-                    array_push($resultArray, $result);
+        if ($quiz->getDeadLine() != null ) {
+            $depasse =  (new \DateTime("now")) > $quiz->getDeadLine();
+        } else {
+            $depasse = false;
+        }
+
+
+        if (!$depasse) { 
+            $form = $this->createForm(ResultType::class);
+            $resultArray = [];
+            foreach($quiz->getQuestions() as $question) {
+                foreach($question->getReponses() as $reponse) {
+                    $stringId = strval($reponse->getId());
+                    if($request->request->get($stringId) != null) {
+                        $result = new Result();
+                        $result->setUser($this->getUser());
+                        $result->setResponse($reponse);
+                        array_push($resultArray, $result);
+                    }
                 }
             }
-        }
-        
-        foreach($resultArray as $result) {
-            $manager->persist($result);
-        }
+            
+            foreach($resultArray as $result) {
+                $manager->persist($result);
+            }
 
-        $manager->flush();
+            $manager->flush();
 
-        if(sizeof($resultArray) != 0) {
+            if(sizeof($resultArray) != 0) {
+                return $this->redirectToRoute('search_quiz');
+            } else {
+                $idHash = $this->numhash($id);
+                return $this->render('quiz/answer_quiz.html.twig', [
+                    'formAnswer' => $form->createView(),
+                    'quiz' => $quiz,
+                    'codeHash' => $idHash,
+                ]);
+            }
+
+        } else { 
+            $this->addFlash('failur','Le quiz recherché n\'est plus disponible');
             return $this->redirectToRoute('search_quiz');
-        } else {
-            $idHash = $this->numhash($id);
-            return $this->render('quiz/answer_quiz.html.twig', [
-                'formAnswer' => $form->createView(),
-                'quiz' => $quiz,
-                'codeHash' => $idHash,
-                'now' => $now
-            ]);
-        }
+        } 
+        
 
     }
 
