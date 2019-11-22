@@ -3,12 +3,3 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     form_themes: ['bootstrap_4_layout.html.twig']
-    globals:
-        main_menu:
-            - { label: 'Accueil', route: 'home' }
-            - { label: 'Créer un quiz', route: 'create' }
-            - { label: 'Liste des quiz', route: 'quiz' }
-            - { label: 'Recherche', route: 'search_quiz' }
-            # - { label: 'Mon compte', route: '' }
-            # - { label: 'Inscription', route: '' }
-            # - { label: 'Connexion', route: '' }

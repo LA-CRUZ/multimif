@@ -1,0 +1,38 @@
+.container-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+
+    h1 {
+       font-size: 10rem; 
+    }
+    
+    h2 {
+        font-size: 4rem; 
+        text-transform: uppercase;
+    }
+
+    p {
+        color: white;
+        font-size: 2rem;
+        padding: 2rem 0;
+    }
+
+    .btn-creation {
+        border: none;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        width: 40%;
+        height: 5rem;
+        margin: 4rem;
+        background-color: $blue;
+
+        &:hover {
+            transition: 0.5s;
+            background-color: white;
+            color: $blue;
+        }
+    }
+}

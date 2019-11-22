@@ -1,0 +1,16 @@
+{% extends 'layout.html.twig' %}
+
+{% block menu %}
+    {% include "_menu.html.twig" with {
+        'active': 'home'
+    } %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="container-error">
+        <h1>{{ status_code }}</h1>
+        <h2>{{ status_text }}</h2>
+        <p>Il semblerait qu'une erreur soit survenue lors de l'accès à cette page.</p>
+        <a href="{{ path('home') }}"><button type="button" class="btn btn-primary btn-creation">Retourner à l'accueil</button></a>
+    </div>
+{% endblock %}

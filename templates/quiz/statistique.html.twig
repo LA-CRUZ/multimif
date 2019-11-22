@@ -13,8 +13,11 @@
             <h1> {{ quiz.titre }} </h1>
             <p>  {{ quiz.description }} </p>
 
-            <p class="share-code"> Code de partage : {{ quiz.id }}</p>
+            <p class="share-code"> Code de partage : {{ codeHash }}</p>
             <ul>
+            {% if not display %}
+                <p>Aucune donnée statistique disponible</p>
+            {% else %}
                 {% for question in quiz.questions %}
                 <li class="question"> {{question.texte}} </li>
                 <br>
@@ -36,6 +39,7 @@
                     </ul>
                     <br><br>
                 {% endfor %}
+            {% endif %}
             </ul>
         </div>
     </div>
