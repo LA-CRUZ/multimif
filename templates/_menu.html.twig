@@ -10,13 +10,21 @@
         <a href="{{ path('security_login') }}" class="nav-link">Connexion</a>
     </li>
     {% else %}
-    {% for link in main_menu %}
-        <li class="nav-item">
-            <a href="{{ url(link.route) }}" class="nav-link" {% if link.route == active %}class="active"{% endif %}>
-                {{ link.label | trans }}
-            </a>
-        </li>
-    {% endfor %}
+        {% if "ROLE_USER" in app.user.roles %}
+            <li class="nav-item">
+                <a href="{{ path('search_quiz') }}" class="nav-link">Répondre à un quiz</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a href="{{ path('search_quiz') }}" class="nav-link">Répondre à un quiz</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ path('create') }}" class="nav-link">Créer un quiz</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ path('quiz') }}" class="nav-link">Liste des quiz</a>
+            </li>
+        {% endif %}
     <li class="nav-item">
         <a href="{{ path('security_logout') }}" class="nav-link">Deconnexion</a>
     </li>

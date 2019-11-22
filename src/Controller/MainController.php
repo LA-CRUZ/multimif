@@ -204,8 +204,6 @@ class MainController extends AbstractController
             $id_res = array();
         }
 
-        dump($total_reponse != -1);
-        dump(sizeof($quiz->getQuestions()));
         if( sizeof($quiz->getQuestions()) != 0 && $total_reponse != -1) {
             return $this->render('quiz/statistique.html.twig', [
                 'display' => true,
