@@ -33,6 +33,11 @@ class Quiz
      */
     private $questions;
 
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $deadLine;
+
     public function __construct()
     {
         $this->questions = new ArrayCollection();
@@ -94,6 +99,18 @@ class Quiz
                 $question->setQuiz(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDeadLine(): ?\DateTimeInterface
+    {
+        return $this->deadLine;
+    }
+
+    public function setDeadLine(?\DateTimeInterface $deadLine): self
+    {
+        $this->deadLine = $deadLine;
 
         return $this;
     }

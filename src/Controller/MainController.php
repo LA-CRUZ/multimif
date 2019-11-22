@@ -234,6 +234,9 @@ class MainController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = $this->getDoctrine()->getRepository(Quiz::class)->find($id);
+        $now = date("d/m/Y");
+        $test = new \DateTime();
+        
         $form = $this->createForm(ResultType::class);
         $resultArray = [];
         foreach($quiz->getQuestions() as $question) {
@@ -261,7 +264,8 @@ class MainController extends AbstractController
             return $this->render('quiz/answer_quiz.html.twig', [
                 'formAnswer' => $form->createView(),
                 'quiz' => $quiz,
-                'codeHash' => $idHash
+                'codeHash' => $idHash,
+                'now' => $now
             ]);
         }
 
