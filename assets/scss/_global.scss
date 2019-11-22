@@ -32,3 +32,30 @@ label  {
     width: 100%;
     z-index: 10; 
 }
+
+.alert {
+    top: 4rem;
+    margin-bottom: 5rem;
+    text-align: center;
+    width: fit-content;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.alert-success {
+    animation: seconds 1.0s forwards;
+    animation-iteration-count: 1;
+    animation-delay: 5s;
+    background-color: #5cb85c;
+}
+
+@keyframes seconds {
+    0% {
+      opacity: 1;
+      
+    }
+    100% {
+        opacity: 0;
+      }
+}
