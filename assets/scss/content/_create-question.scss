@@ -1,13 +1,13 @@
 .content {
     display: flex;
     justify-content: center;
-    padding-top: 3rem;
 
     .create-question {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 49%;
+        height: 100%;
     
         form {
             width: 70%

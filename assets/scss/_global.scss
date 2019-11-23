@@ -5,7 +5,6 @@ h1 {
     font-weight: bold;
 }
 
-
 h2 {
     font-size: 1.5rem;
     color: white;
@@ -13,10 +12,11 @@ h2 {
 }
 
 body {
-    background-image: url(../images/board.jpg);
+    margin:0;
+    padding:0;
+    background: url(../images/board.jpg) no-repeat center fixed;
     background-size: cover;
     background-repeat: no-repeat;
-    margin-top: 3rem;
 }
 
 label  {
@@ -33,29 +33,35 @@ label  {
     z-index: 10; 
 }
 
-.alert {
-    top: 4rem;
-    margin-bottom: 5rem;
-    text-align: center;
-    width: fit-content;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
+.testalert {
+    margin-top: 3rem;
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-.alert-success {
-    animation: seconds 1.0s forwards;
-    animation-iteration-count: 1;
-    animation-delay: 5s;
-    background-color: #5cb85c;
-}
-
-@keyframes seconds {
-    0% {
-      opacity: 1;
-      
+    .alert {
+        text-align: center;
+        width: 50%;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
     }
-    100% {
-        opacity: 0;
-      }
+    
+    .alert-success {
+        animation: seconds 1.0s forwards;
+        animation-iteration-count: 1;
+        animation-delay: 3s;
+        background-color: #4eaf4e;
+    }
+    
+    @keyframes seconds {
+        0% {
+          opacity: 1;
+          
+        }
+        100% {
+            opacity: 0;
+        }
+    }
 }

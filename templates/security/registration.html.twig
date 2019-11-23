@@ -16,7 +16,7 @@
         {{form_row(form.email,    {'label':'Adresse email','attr':{'placeholder' : 'Adresse email'}})}}
         {{form_row(form.password, {'label':'Mot de Passe', 'attr':{'placeholder' : 'Mot de Passe'}})}}
         {{form_row(form.confirm_password, {'label':'Confirmer votre Mot de passe', 'attr':{'placeholder' : 'confirmer'}})}}
-
+        <p>Vous avez déja un compte ? <a href="{{ path('security_login') }}">Connectez-vous</a></p>
         <div class="btn-form-auth">
             <button type="submit" class ="btn btn-success btn-auth">Valider</button>
         </div>
