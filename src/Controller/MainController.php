@@ -176,16 +176,6 @@ class MainController extends AbstractController
             'codeHash' => $idHash
         ]);    
     }
-    
-    /**
-     * @Route("/resultat", name="resultat")
-     */
-    public function resultat()
-    {
-        return $this->render('main/resultat.html.twig', [
-            'controller_name' => 'MainController',
-        ]);    
-    }
 
     /**
      * @Route("/statistique/{id}", name="create_quiz")
