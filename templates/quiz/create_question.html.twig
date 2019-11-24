@@ -24,11 +24,17 @@
             {% endfor %}
 
             <div class="btn-form">
-                {{ form_row(formQuizQuestion.add) }}
-                {{ form_row(formQuizQuestion.end) }}
+                {% if edit %}
+                    <a class="form-group" href="{{ path('edit-quiz', {'id': quiz.id }) }}">
+                        <button type="button" class="btn btn-danger btn-question">Annuler</button>
+                    </a>
+                    {{ form_row(formQuizQuestion.add, { 'label': 'Enregistrer' }) }}              
+                {% else %}
+                    {{ form_row(formQuizQuestion.add, { 'label': 'Ajouter la question' }) }}
+                {% endif %}
             </div>
 
-            {{ form_end(formQuizQuestion) }}
+            
         </div>
         <div class="separator">
             <hr>
@@ -38,18 +44,33 @@
             <hr>
             <h1> {{ quiz.titre }} </h1>
             <p>  {{ quiz.description }} </p>
-            <ul>
-                {% for question in quiz.questions %}
-                <li class="question"> {{question.texte}} </li>
-                <br>
+            <div class="content-scroll">
+                <div class="scroll">
                     <ul>
-                        {% for reponse in question.reponses %}
-                            <li class="reponse"><input type="checkbox" disabled=true> {{ reponse.texte }} </li>
+                        {% for question in quiz.questions %}
+                        <li class="question"> {{question.texte}} </li>
+                        <br>
+                            <ul>
+                                {% for reponse in question.reponses %}
+                                    <li class="reponse"><input type="checkbox" disabled=true> {{ reponse.texte }} </li>
+                                {% endfor %}
+                            </ul>
+                            <br><br>
                         {% endfor %}
                     </ul>
-                    <br><br>
-                {% endfor %}
-            </ul>
+                </div>
+            </div>
+             <div class="btn-form">
+                {% if not edit %}
+                    <a class="form-group" href="{{ path('remove-quiz', {'id': quiz.id }) }}">
+                        <button type="button" class="btn btn-danger btn-question">Annuler la création</button>
+                    </a>
+                {% endif %}
+                <a class="form-group" href="{{ path('show_quiz', {'id': quiz.id }) }}">
+                    <button type="button" class="btn btn-success btn-question">Terminer</button>
+                </a>
+            </div>
         </div>
     </div>
+    {{ form_end(formQuizQuestion) }}
 {% endblock %}
