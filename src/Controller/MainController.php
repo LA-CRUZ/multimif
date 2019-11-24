@@ -334,12 +334,14 @@ class MainController extends AbstractController
                     $user = $this->getUser();
                     $idUser = $user->getId();
                     $manager = $this->getDoctrine()->getManager();
-                    $query = $manager->createQuery("select distinct IDENTITY(r.question) from App\Entity\Reponse r inner join  App\Entity\Result res where res.response=r.id and res.user=:idUser");
-                    $query->setParameter('idUser', $idUser);
+                    $query = $manager->createQuery("select distinct  IDENTITY(q.quiz) from App\Entity\Question q inner join App\Entity\Reponse resp where q.id=resp.question 
+                    and resp.question in (select IDENTITY(r.question) from App\Entity\Reponse r inner join App\Entity\Result res 
+                       where res.response=r.id and res.user=:idUser)");
+                    $query->setParameter('idUser', $idUser);  
                     $IdsQuiz = $query->getResult();
                     
                     if (!empty($IdsQuiz)){
-
+                        print_r($IdsQuiz);
                         foreach($IdsQuiz as $idQuiz){
                             if ($idQuiz[1] == $id){
                                 return $this->render('quiz/search_quiz.html.twig', [
@@ -354,6 +356,6 @@ class MainController extends AbstractController
         } else $this->addFlash('error', 'Erreur : Merci d\'entrer une valeur numérique.');
         return $this->render('quiz/search_quiz.html.twig', [
             'controller_name' => 'MainController',
-        ]);          
+        ]);    
     }
 }
