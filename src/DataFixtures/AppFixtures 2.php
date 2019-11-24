@@ -33,7 +33,7 @@ class AppFixtures extends Fixture
         $user_enseignant2->setPassword($password_enseignant);
         $user_enseignant2->addRole("ROLE_TEACHER");
         $manager->persist($user_enseignant2);
-        
+
         $user_eleve = new User();
         $user_eleve->setEmail("eleve@eleve.com");
         $user_eleve->setUsername("eleve");

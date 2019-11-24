@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
@@ -31,7 +32,7 @@ class SecurityController extends AbstractController
 
             $manager->persist($user);
             $manager->flush();
-
+            $this->addFlash('success', 'Inscription effectuée.');
             return $this->redirectToRoute('security_login');
         }
         
@@ -44,7 +45,10 @@ class SecurityController extends AbstractController
     /**
      * @Route("/connexion", name="security_login")
      */
-    public function login (){
+    public function login (AuthenticationUtils $authUtils){
+        $error = $authUtils->getLastAuthenticationError();
+        if(!is_null($error))
+            $this->addFlash('error', 'Erreur : Identifiants de connexion incorrects.');
         return $this->render('security/login.html.twig');
     }
 
