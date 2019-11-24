@@ -84,6 +84,7 @@ class MainController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
+
             $manager->persist($reponse1);
             $manager->persist($reponse2);
             $manager->persist($reponse3);
@@ -93,17 +94,16 @@ class MainController extends AbstractController
 
             if($form->get('add')->isClicked())
             {
+                dump("ici");
                 $this->addFlash('success', 'Question enregistrée.');
                 return $this->redirectToRoute('create_question', ['id' => $id]);
-            } else {
-                $this->addFlash('success', 'Quiz enregistré.');
-                return $this->redirectToRoute('show_quiz', ['id' => $id]);
             }
         }
 
         return $this->render('quiz/create_question.html.twig', [
             'formQuizQuestion' => $form->createView(),
-            'quiz' => $quiz
+            'quiz' => $quiz,
+            'edit' => false
         ]);    
     }
 
@@ -159,8 +159,13 @@ class MainController extends AbstractController
     /**
      * @Route("/quiz/{id}", name="show_quiz")
      */
-    public function quiz($id)
+    public function quiz(Request $request, $id)
     {
+        if (strpos($request->headers->get('referer'), 'create_question') != false)
+        {
+            $this->addFlash('success', 'Quiz enregistré.');
+        }
+
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz = $repo->find($id);
@@ -169,16 +174,6 @@ class MainController extends AbstractController
             'controller_name' => 'MainController',
             'quiz' => $quiz,
             'codeHash' => $idHash
-        ]);    
-    }
-    
-    /**
-     * @Route("/resultat", name="resultat")
-     */
-    public function resultat()
-    {
-        return $this->render('main/resultat.html.twig', [
-            'controller_name' => 'MainController',
         ]);    
     }
 
@@ -316,7 +311,8 @@ class MainController extends AbstractController
 
         return $this->render('quiz/create_question.html.twig', [
             'formQuizQuestion' => $form->createView(),
-            'quiz' => $quiz
+            'quiz' => $quiz,
+            'edit' => true
         ]);
     }
 

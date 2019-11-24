@@ -2,7 +2,7 @@
 
 {% block menu %}
     {% include "_menu.html.twig" with {
-        'active': 'home'
+        'active': 'quiz'
     } %}
 {% endblock %}
 
@@ -20,17 +20,16 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <p>{{quiz.titre}}</p>
                             <div>
-                                <a href="quiz/{{quiz.id}}">
+                                <a href="quiz/{{quiz.id}}" data-toggle="tooltip" title="Voir le quiz">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="edit/{{quiz.id}}">
+                                <a href="edit/{{quiz.id}}" data-toggle="tooltip" title="Modifier le quiz">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="statistique/{{quiz.id}}">
+                                <a href="statistique/{{quiz.id}}" data-toggle="tooltip" title="Voir les statistiques">
                                     <i class="fas fa-chart-pie"></i>
                                 </a>
-
-                                <a href="/remove/{{quiz.id}}">
+                                <a href="/remove/{{quiz.id}}" data-toggle="tooltip" title="Supprimer le quiz">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
@@ -41,4 +40,12 @@
             <a href="/create"><button class="btn btn-success btn-create">Créer un Quiz</button></a>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip(); 
+        });
+    </script>
 {% endblock %}

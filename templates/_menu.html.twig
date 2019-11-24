@@ -1,32 +1,43 @@
-<ul class="navbar-nav mr-auto">
-    <li class="nav-item">
-        <a href="{{ path('home') }}" class="nav-link">Accueil</a>
-    </li>
+<ul class="navbar-nav ml-auto">
+    {% for link in header_menu_all %}
+        <li {% if link.route == active %}class="active"{% endif %}>
+            <a class="nav-link" href="{{ url(link.route) }}">
+                {{ link.label }}
+            </a>
+        </li>
+    {% endfor %}
     {% if not app.user %}
-    <li class="nav-item">
-        <a href="{{ path('security_registration') }}" class="nav-link">Inscription</a>
-    </li>
-    <li class="nav-item">
-        <a href="{{ path('security_login') }}" class="nav-link">Connexion</a>
-    </li>
+        {% for link in header_menu_deco %}
+            <li {% if link.route == active %}class="active"{% endif %}>
+                <a class="nav-link" href="{{ url(link.route) }}">
+                    {{ link.label }}
+                </a>
+            </li>
+        {% endfor %}
     {% else %}
         {% if "ROLE_USER" in app.user.roles %}
-            <li class="nav-item">
-                <a href="{{ path('search_quiz') }}" class="nav-link">Répondre à un quiz</a>
-            </li>
+            {% for link in header_menu_eleve %}
+                <li {% if link.route == active %}class="active"{% endif %}>
+                    <a class="nav-link" href="{{ url(link.route) }}">
+                        {{ link.label }}
+                    </a>
+                </li>
+            {% endfor %}
         {% else %}
-            <li class="nav-item">
-                <a href="{{ path('search_quiz') }}" class="nav-link">Répondre à un quiz</a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ path('create') }}" class="nav-link">Créer un quiz</a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ path('quiz') }}" class="nav-link">Liste des quiz</a>
-            </li>
+            {% for link in header_menu_prof %}
+                <li {% if link.route == active %}class="active"{% endif %}>
+                    <a class="nav-link" href="{{ url(link.route) }}">
+                        {{ link.label }}
+                    </a>
+                </li>
+            {% endfor %}
         {% endif %}
-    <li class="nav-item">
-        <a href="{{ path('security_logout') }}" class="nav-link">Deconnexion</a>
-    </li>
+        {% for link in header_menu_co %}
+            <li {% if link.route == active %}class="active"{% endif %}>
+                <a class="nav-link" href="{{ url(link.route) }}">
+                    {{ link.label }}
+                </a>
+            </li>
+        {% endfor %}
     {% endif %}
 </ul>
