@@ -46,8 +46,8 @@ class MainController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-          if ($form["end"]->getData("end")) {
-            $quiz->setDeadLine(($form['deadLine']->getData('deadLine')));
+          if ($form['end']->getData()) {
+            $quiz->setDeadLine(($form['deadLine']->getData()));
           } else {
             $quiz->setDeadLine(null);
           }
@@ -165,7 +165,7 @@ class MainController extends AbstractController
      */
     public function quiz(Request $request, $id)
     {
-        if (strpos($request->headers->get('referer'), 'create_question') != false)
+        if (strpos($request->headers->get('referer'), 'create_question') !== false)
         {
             $this->addFlash('success', 'Quiz enregistré.');
         }
@@ -194,29 +194,31 @@ class MainController extends AbstractController
 
         $total_reponse = 0;
         foreach ($quiz->getQuestions() as $question){
-            $total_reponse = 0;
+            $temp_total = 0;
+            $respIds = [];
             foreach($question->getReponses() as $reponse){
-                $id_res[$reponse->getId()] = $reponse->getId();
+                $respIds[] = $reponse->getId(); 
                 $result = $repoRes->findByresponse($reponse->getId());
-                $total_reponse += count($result);
+                $temp_total += count($result);
                 $stat[$reponse->getId()] = count($result);
             }
-              foreach($id_res as $i => $idReponse){
-                $total_reponse = $total_reponse == null ? -1 : $total_reponse;
-                $pourcent[$idReponse] = round(($stat[$idReponse] / $total_reponse) * 100);
+            $total_reponse += $temp_total;
+            $temp_total = $temp_total == 0 ? 1 : $temp_total;
+            
+            foreach($respIds as $idReponse)
+            {
+                $pourcent[$idReponse] = intval(round(($stat[$idReponse] / $temp_total) * 100));
             }
-            $total_idrep[$question->getId()] = $total_reponse;
-            $id_res = array();
+            $totalRepByQuestion[$question->getId()] = $temp_total;
         }
 
-        if( sizeof($quiz->getQuestions()) != 0 && $total_reponse != -1) {
+        if( sizeof($quiz->getQuestions()) != 0 && $total_reponse != 0) {
             return $this->render('quiz/statistique.html.twig', [
                 'display' => true,
                 'controller_name' => 'MainController',
                 'stat' => $stat,
                 'quiz' => $quiz,
-                'total' => $total_idrep,
-                'id_res' => $id_res,
+                'total' => $totalRepByQuestion,
                 'pourcent' => $pourcent,
                 'codeHash' => $idHash
             ]);
