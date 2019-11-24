@@ -38,6 +38,13 @@ class Quiz
      */
     private $deadLine;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $end;
+
+
+
 
     public function __construct()
     {
@@ -115,5 +122,18 @@ class Quiz
 
         return $this;
     }
+
+    public function getEnd(): ?bool
+    {
+        return $this->end;
+    }
+
+    public function setEnd(?bool $end): self
+    {
+        $this->end = $end;
+
+        return $this;
+    }
+
 
 }

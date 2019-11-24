@@ -40,12 +40,17 @@ class MainController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = new Quiz();
-        
-        $form = $this->createForm(QuizType::class, $quiz);
-        
-        $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        $form = $this->createForm(QuizType::class, $quiz);
+
+        $form->handleRequest($request);
+        dump($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+          if ($form["end"]->getData("end")) {
+            $quiz->setDeadLine(($form['deadLine']->getData('deadLine')));
+          } else {
+            $quiz->setDeadLine(null);
+          }
             $manager->persist($quiz);
             $manager->flush();
 
@@ -54,7 +59,7 @@ class MainController extends AbstractController
 
         return $this->render('quiz/create.html.twig', [
             'formQuiz' => $form->createView()
-        ]);    
+        ]);
     }
 
     /**
@@ -64,9 +69,9 @@ class MainController extends AbstractController
     {
         $manager = $this->getDoctrine()->getManager();
 
+        dump($request);
         $question = new Question();
         $quiz = $manager->getRepository(Quiz::class)->find($id);
-
         $reponse1 = new Reponse();
         $question->addReponse($reponse1);
         $reponse2 = new Reponse();
@@ -75,11 +80,11 @@ class MainController extends AbstractController
         $question->addReponse($reponse3);
         $reponse4 = new Reponse();
         $question->addReponse($reponse4);
-        
+
         $question->setQuiz($quiz);
-        
+
         $form = $this->createForm(QuestionType::class, $question);
-        
+
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
@@ -101,14 +106,14 @@ class MainController extends AbstractController
         return $this->render('quiz/create_question.html.twig', [
             'formQuizQuestion' => $form->createView(),
             'quiz' => $quiz
-        ]);    
+        ]);
     }
 
     /**
      * @Route("/remove/{id}", name="remove-quiz")
      */
     public function removeQuiz(Request $request, $id){
-        
+
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = $manager->getRepository(Quiz::class)->find($id);
@@ -140,7 +145,7 @@ class MainController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz_list = $repo->findAll();
-        
+
         return $this->render('quiz/quiz_list.html.twig', [
             'controller_name' => 'MainController',
             'quiz_list' => $quiz_list
@@ -149,8 +154,8 @@ class MainController extends AbstractController
 
     public function numhash($n) {
         return (((0x0000FFFF & $n) << 16) + ((0xFFFF0000 & $n) >> 16));
-    }    
- 
+    }
+
     /**
      * @Route("/quiz/{id}", name="show_quiz")
      */
@@ -159,15 +164,15 @@ class MainController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz = $repo->find($id);
-        
+
         $idHash = $this->numhash($id);
         return $this->render('quiz/quiz.html.twig', [
             'controller_name' => 'MainController',
             'quiz' => $quiz,
             'codeHash' => $idHash
-        ]);    
+        ]);
     }
-    
+
     /**
      * @Route("/resultat", name="resultat")
      */
@@ -175,7 +180,7 @@ class MainController extends AbstractController
     {
         return $this->render('main/resultat.html.twig', [
             'controller_name' => 'MainController',
-        ]);    
+        ]);
     }
 
     /**
@@ -192,12 +197,12 @@ class MainController extends AbstractController
         foreach ($quiz->getQuestions() as $question){
             $total_reponse = 0;
             foreach($question->getReponses() as $reponse){
-                $id_res[$reponse->getId()] = $reponse->getId(); 
+                $id_res[$reponse->getId()] = $reponse->getId();
                 $result = $repoRes->findByresponse($reponse->getId());
                 $total_reponse += count($result);
                 $stat[$reponse->getId()] = count($result);
             }
-            foreach($id_res as $i => $idReponse){
+              foreach($id_res as $i => $idReponse){
                 $total_reponse = $total_reponse == null ? -1 : $total_reponse;
                 $pourcent[$idReponse] = round(($stat[$idReponse] / $total_reponse) * 100);
             }
@@ -217,7 +222,7 @@ class MainController extends AbstractController
                 'id_res' => $id_res,
                 'pourcent' => $pourcent,
                 'codeHash' => $idHash
-            ]); 
+            ]);
         } else {
             return $this->render('quiz/statistique.html.twig', [
                 'display' => false,
@@ -242,7 +247,7 @@ class MainController extends AbstractController
         }
 
 
-        if (!$depasse) { 
+        if (!$depasse) {
             $form = $this->createForm(ResultType::class);
             $resultArray = [];
             foreach($quiz->getQuestions() as $question) {
@@ -256,7 +261,7 @@ class MainController extends AbstractController
                     }
                 }
             }
-            
+
             foreach($resultArray as $result) {
                 $manager->persist($result);
             }
@@ -274,15 +279,15 @@ class MainController extends AbstractController
                 ]);
             }
 
-        } else { 
+        } else {
             $this->addFlash('failur','Le quiz recherché n\'est plus disponible');
             return $this->redirectToRoute('search_quiz');
-        } 
-        
+        }
+
 
     }
 
-    /**   
+    /**
      * @Route("/remove_question/{id}", name="remove-question")
      */
     public function removeQuestion(Request $request, $id){
@@ -296,17 +301,17 @@ class MainController extends AbstractController
 
         return $this->redirectToRoute('edit-quiz', [ 'id' => $quiz->getId()]);
     }
-    
-    /**   
+
+    /**
      * @Route("/edit_question/{id}", name="edit-question")
      */
     public function editQuestion(Request $request, $id){
         $manager = $this->getDoctrine()->getManager();
-        
+
         $question = $manager->getRepository(Question::class)->find($id);
         $idQuiz = $question->getQuiz()->getId();
         $quiz = $manager->getRepository(Quiz::class)->find($idQuiz);
-        
+
         $form = $this->createForm(QuestionType::class, $question);
 
         $form->handleRequest($request);
@@ -342,9 +347,9 @@ class MainController extends AbstractController
         if(!$quiz){
             return $this->render('quiz/search_quiz.html.twig', [
                 'controller_name' => 'MainController',
-            ]);  
+            ]);
         }else{
-            return $this->redirectToRoute('answer_quiz', ['id' => $id]);   
-        }          
+            return $this->redirectToRoute('answer_quiz', ['id' => $id]);
+        }
     }
 }

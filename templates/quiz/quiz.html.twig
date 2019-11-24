@@ -12,7 +12,11 @@
             <h1> {{ quiz.titre }} </h1>
             <p>  {{ quiz.description }} </p>
             <p class="share-code"> Code de partage : {{ codeHash }}</p>
-            <p> Ce quiz prend fin le {{quiz.deadLine|date('d-m-Y') }} à {{quiz.deadLine|date('h')}} h {{quiz.deadLine|date('m')}} </p>
+            {% if (quiz.deadLine == null) %}
+            <p> Ce quiz ne possède pas de date finale </p>
+            {% else %}
+            <p> Ce quiz prend fin le {{quiz.deadLine|date('d-m-Y') }} à {{quiz.deadLine|date('H')}} h {{quiz.deadLine|date('m')}} </p>
+            {% endif %}
             <ul>
                 {% for question in quiz.questions %}
                 <li class="question"> {{question.texte}} </li>
