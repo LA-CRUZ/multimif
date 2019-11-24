@@ -31,10 +31,14 @@ label  {
     top: 0;
     width: 100%;
     z-index: 10; 
+
+    img {
+        height: 40px;
+    }
 }
 
 .testalert {
-    margin-top: 3rem;
+    margin-top: 5rem;
     height: 5rem;
     display: flex;
     justify-content: center;
