@@ -44,7 +44,11 @@ class Quiz
     private $end;
 
 
-
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="quizzes")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $creator;
 
     public function __construct()
     {
@@ -136,4 +140,15 @@ class Quiz
     }
 
 
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): self
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
 }

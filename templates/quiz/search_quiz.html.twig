@@ -2,14 +2,13 @@
 
 {% block menu %}
     {% include "_menu.html.twig" with {
-        'active': 'home'
+        'active': 'search_quiz'
     } %}
 {% endblock %}
 
 {% block main_content %}
     <div class="intro">
-        <h1>Bienvenue sur votre site de quiz en ligne</h1>
-        <h2>Commencez dès maintenant en répondant à un Quiz</h2>
+        <h1>Entrez le code de partage d'un quiz pour commencer</h1>
             <div class="search-container">
             <form action="/search" method="post">
                 <div class="form-group">

@@ -8,8 +8,28 @@
 
 {% block main_content %}
     <div class="intro">
-        <h1>Bienvenue sur votre site de création de quiz en ligne</h1>
-        <h2>Commencez dès maintenant en créant votre Quiz</h2>
-        <a href="{{ path('create') }}"><button type="button" class="btn btn-primary btn-creation">Créer un questionnaire</button></a>
+        {% if not app.user %}
+            <h1>Bienvenue sur votre site de Quiz en ligne</h1>
+            <h2>Connectez vous dès maintenant pour pouvoir commencer !</h2>
+            <div class="btn-home">
+                <a href="{{ path('security_login') }}"><button type="button" class="btn btn-primary">Connexion</button></a>
+                <a href="{{ path('security_registration') }}"><button type="button" class="btn btn-primary">Inscription</button></a>
+            </div>
+        {% else %}
+            {% if "ROLE_TEACHER" in app.user.roles %}
+                <h1>Bienvenue sur votre site de création de quiz en ligne</h1>
+                <h2>Commencez dès maintenant en créant votre Quiz</h2>
+                <a href="{{ path('create') }}"><button type="button" class="btn btn-primary btn-creation">Créer un Quiz</button></a>
+            {% else %}
+                <h1>Bienvenue sur votre site de quiz en ligne</h1>
+                <h2>Commencez dès maintenant en recherchant un Quiz</h2>
+                    <div class="search-container">
+                        <a href="{{ path('search_quiz') }}">
+                            <button type="submit" class="btn btn-success btn-create">Chercher un Quiz</button>
+                         </a>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 {% endblock %}

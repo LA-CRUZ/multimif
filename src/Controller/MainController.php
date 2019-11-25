@@ -51,11 +51,13 @@ class MainController extends AbstractController
           } else {
             $quiz->setDeadLine(null);
           }
-            $manager->persist($quiz);
-            $manager->flush();
 
-            return $this->redirectToRoute('create_question', ['id' => $quiz->getId()]);
-        }
+        $quiz->setCreator($this->getUser());
+        $manager->persist($quiz);
+        $manager->flush();
+
+        return $this->redirectToRoute('create_question', ['id' => $quiz->getId()]);
+    }
 
         return $this->render('quiz/create.html.twig', [
             'formQuiz' => $form->createView()
@@ -88,6 +90,7 @@ class MainController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
+
             $manager->persist($reponse1);
             $manager->persist($reponse2);
             $manager->persist($reponse3);
@@ -97,16 +100,17 @@ class MainController extends AbstractController
 
             if($form->get('add')->isClicked())
             {
+                dump("ici");
+                $this->addFlash('success', 'Question enregistrée.');
                 return $this->redirectToRoute('create_question', ['id' => $id]);
-            } else {
-                return $this->redirectToRoute('show_quiz', ['id' => $id]);
             }
         }
 
         return $this->render('quiz/create_question.html.twig', [
             'formQuizQuestion' => $form->createView(),
-            'quiz' => $quiz
-        ]);
+            'quiz' => $quiz,
+            'edit' => false
+        ]);    
     }
 
     /**
@@ -120,6 +124,8 @@ class MainController extends AbstractController
 
         $manager->remove($quiz);
         $manager->flush();
+
+        $this->addFlash('success', 'Le quiz a bien été supprimé.');
 
         return $this->redirectToRoute('quiz');
     }
@@ -144,7 +150,7 @@ class MainController extends AbstractController
     public function show_quiz_list(){
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
-        $quiz_list = $repo->findAll();
+        $quiz_list = $repo->findBycreator($this->getUser());
 
         return $this->render('quiz/quiz_list.html.twig', [
             'controller_name' => 'MainController',
@@ -159,8 +165,13 @@ class MainController extends AbstractController
     /**
      * @Route("/quiz/{id}", name="show_quiz")
      */
-    public function quiz($id)
+    public function quiz(Request $request, $id)
     {
+        if (strpos($request->headers->get('referer'), 'create_question') != false)
+        {
+            $this->addFlash('success', 'Quiz enregistré.');
+        }
+
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz = $repo->find($id);
@@ -170,16 +181,6 @@ class MainController extends AbstractController
             'controller_name' => 'MainController',
             'quiz' => $quiz,
             'codeHash' => $idHash
-        ]);
-    }
-
-    /**
-     * @Route("/resultat", name="resultat")
-     */
-    public function resultat()
-    {
-        return $this->render('main/resultat.html.twig', [
-            'controller_name' => 'MainController',
         ]);
     }
 
@@ -210,8 +211,6 @@ class MainController extends AbstractController
             $id_res = array();
         }
 
-        dump($total_reponse != -1);
-        dump(sizeof($quiz->getQuestions()));
         if( sizeof($quiz->getQuestions()) != 0 && $total_reponse != -1) {
             return $this->render('quiz/statistique.html.twig', [
                 'display' => true,
@@ -240,14 +239,12 @@ class MainController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = $this->getDoctrine()->getRepository(Quiz::class)->find($id);
+        
+        $depasse = false;
         if ($quiz->getDeadLine() != null ) {
             $depasse =  (new \DateTime("now")) > $quiz->getDeadLine();
-        } else {
-            $depasse = false;
         }
-
-
-        if (!$depasse) {
+        if (!$depasse) { 
             $form = $this->createForm(ResultType::class);
             $resultArray = [];
             foreach($quiz->getQuestions() as $question) {
@@ -279,12 +276,16 @@ class MainController extends AbstractController
                 ]);
             }
 
-        } else {
-            $this->addFlash('failur','Le quiz recherché n\'est plus disponible');
-            return $this->redirectToRoute('search_quiz');
+            if(sizeof($resultArray) != 0) {
+                $this->addFlash('success', 'Votre réponse a été enregistrée.');
+                return $this->redirectToRoute('search_quiz');
+            } else {
+                $this->addFlash('failur','Le quiz recherché n\'est plus disponible');
+                return $this->redirectToRoute('search_quiz');
+            }
         }
-
-
+            
+        
     }
 
     /**
@@ -299,6 +300,7 @@ class MainController extends AbstractController
         $manager->remove($question);
         $manager->flush();
 
+        $this->addFlash('success', 'La question a bien été supprimée.');
         return $this->redirectToRoute('edit-quiz', [ 'id' => $quiz->getId()]);
     }
 
@@ -321,15 +323,18 @@ class MainController extends AbstractController
 
             if($form->get('add')->isClicked())
             {
+                $this->addFlash('success', 'Question enregistrée.');
                 return $this->redirectToRoute('create_question', ['id' => $idQuiz]);
             } else {
+                $this->addFlash('success', 'Quiz enregistré.');
                 return $this->redirectToRoute('show_quiz', ['id' => $idQuiz]);
             }
         }
 
         return $this->render('quiz/create_question.html.twig', [
             'formQuizQuestion' => $form->createView(),
-            'quiz' => $quiz
+            'quiz' => $quiz,
+            'edit' => true
         ]);
     }
 
@@ -339,17 +344,57 @@ class MainController extends AbstractController
     public function search()
     {
         $idHash = isset($_POST['id_quiz']) ? $_POST['id_quiz'] : -1 ;
-        $id = $this->numhash($idHash);
 
-        $repo = $this->getDoctrine()->getRepository(Quiz::class);
-        $quiz = $repo->find($id);
-
-        if(!$quiz){
-            return $this->render('quiz/search_quiz.html.twig', [
-                'controller_name' => 'MainController',
-            ]);
-        }else{
-            return $this->redirectToRoute('answer_quiz', ['id' => $id]);
-        }
+        if(is_numeric($idHash)) {//Si la valeur entrée est bien un nombre on vérifie que le quiz existe
+            if($idHash != -1){//Si id_quiz n'était pas défini, c'est la première arrivée sur la page.
+                $id = $this->numhash($idHash);
+                $repo = $this->getDoctrine()->getRepository(Quiz::class);
+                $quiz = $repo->find($id);
+                if(!$quiz){//Si l'id renseigné ne correspond à aucun quiz
+                    $this->addFlash('error', 'Erreur : Le quizz indiqué n\'existe pas.');  
+                }else{//On a rempli toutes les conditions pour accéder à la page de réponse
+                    $depasse = false;
+                    if ($quiz->getDeadLine() != null ) {
+                        $depasse =  (new \DateTime("now")) > $quiz->getDeadLine();
+                    } 
+                    dump($depasse);
+                    $user = $this->getUser();
+                    $idUser = $user->getId();
+                    $manager = $this->getDoctrine()->getManager();
+                    $query = $manager->createQuery("select distinct  IDENTITY(q.quiz) from App\Entity\Question q inner join App\Entity\Reponse resp where q.id=resp.question 
+                    and resp.question in (select IDENTITY(r.question) from App\Entity\Reponse r inner join App\Entity\Result res 
+                       where res.response=r.id and res.user=:idUser)");
+                    $query->setParameter('idUser', $idUser);  
+                    $IdsQuiz = $query->getResult();
+                    
+                    if (!empty($IdsQuiz)){
+                        
+                        print_r($IdsQuiz);
+                        
+                            foreach($IdsQuiz as $idQuiz){
+                                if ($idQuiz[1] == $id){
+                                        return $this->render('quiz/search_quiz.html.twig', [
+                                            'controller_name' => 'MainController',
+                                        ]);
+                                     
+                                } 
+                        }
+                       /* if ($depasse != false) {*/
+                            $this->addFlash('error','Le quiz n\'est plus disponible');
+                            return $this->render('quiz/search_quiz.html.twig', [
+                                'controller_name' => 'MainController',
+                            ]);
+                             
+                            /*} else {*/
+                            return $this->redirectToRoute('answer_quiz', ['id' => $id]);
+                        /*}*/
+                        
+                    }
+                }
+            }
+        } else $this->addFlash('error', 'Erreur : Merci d\'entrer une valeur numérique.');
+        return $this->render('quiz/search_quiz.html.twig', [
+            'controller_name' => 'MainController',
+        ]);    
     }
 }

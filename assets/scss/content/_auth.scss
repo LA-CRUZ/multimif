@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    margin-top: 3rem;
 
     form {
         width: 70%
@@ -13,8 +13,9 @@
         margin-bottom: 2rem;
     }
 
-    .test {
-        background-color: red;
+    p {
+        color: white;
+        margin: 2rem 0 0 0;
     }
 
     .btn-form-auth {
