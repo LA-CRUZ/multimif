@@ -15,8 +15,9 @@
 
         {{ form_row(formQuiz.titre) }}
         {{ form_row(formQuiz.description) }}
-        {{ form_row(formQuiz.deadLine)}}
         {{ form_row(formQuiz.end)}}
+        {{ form_row(formQuiz.deadLine)}}
+        <div class="anchor-calendar"></div>
 
         <div class="btn-form">
             {{ form_row(formQuiz.Suivant) }}
@@ -24,4 +25,28 @@
 
         {{ form_end(formQuiz) }}
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('.js-datepicker').datepicker({
+            format: 'dd-MM-yyyy',
+            orientation: 'auto',
+            autoclose : 'false',
+            container : '.anchor-calendar',
+            todayHighlight : 'true'
+        });
+
+        $(document).ready(function () {
+            $('.date').hide();
+            $('.checkboxdate').click(function (event) {
+                if (this.checked) {
+                    $('.date').toggle("slow");
+                } else {
+                    $('.date').hide("slow");
+                }
+            });
+        });
+
+    </script>
 {% endblock %}
