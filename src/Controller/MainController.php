@@ -40,22 +40,28 @@ class MainController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = new Quiz();
-        
+
         $form = $this->createForm(QuizType::class, $quiz);
-        
+
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
-            $quiz->setCreator($this->getUser());
-            $manager->persist($quiz);
-            $manager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+          if ($form["end"]->getData("end")) {
+            $quiz->setDeadLine(($form['deadLine']->getData('deadLine')));
+          } else {
+            $quiz->setDeadLine(null);
+          }
 
-            return $this->redirectToRoute('create_question', ['id' => $quiz->getId()]);
-        }
+        $quiz->setCreator($this->getUser());
+        $manager->persist($quiz);
+        $manager->flush();
+
+        return $this->redirectToRoute('create_question', ['id' => $quiz->getId()]);
+    }
 
         return $this->render('quiz/create.html.twig', [
             'formQuiz' => $form->createView()
-        ]);    
+        ]);
     }
 
     /**
@@ -67,7 +73,6 @@ class MainController extends AbstractController
 
         $question = new Question();
         $quiz = $manager->getRepository(Quiz::class)->find($id);
-
         $reponse1 = new Reponse();
         $question->addReponse($reponse1);
         $reponse2 = new Reponse();
@@ -76,11 +81,11 @@ class MainController extends AbstractController
         $question->addReponse($reponse3);
         $reponse4 = new Reponse();
         $question->addReponse($reponse4);
-        
+
         $question->setQuiz($quiz);
-        
+
         $form = $this->createForm(QuestionType::class, $question);
-        
+
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
@@ -94,7 +99,6 @@ class MainController extends AbstractController
 
             if($form->get('add')->isClicked())
             {
-                dump("ici");
                 $this->addFlash('success', 'Question enregistrée.');
                 return $this->redirectToRoute('create_question', ['id' => $id]);
             }
@@ -111,7 +115,7 @@ class MainController extends AbstractController
      * @Route("/remove/{id}", name="remove-quiz")
      */
     public function removeQuiz(Request $request, $id){
-        
+
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = $manager->getRepository(Quiz::class)->find($id);
@@ -154,8 +158,8 @@ class MainController extends AbstractController
 
     public function numhash($n) {
         return (((0x0000FFFF & $n) << 16) + ((0xFFFF0000 & $n) >> 16));
-    }    
- 
+    }
+
     /**
      * @Route("/quiz/{id}", name="show_quiz")
      */
@@ -169,12 +173,13 @@ class MainController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Quiz::class);
 
         $quiz = $repo->find($id);
+
         $idHash = $this->numhash($id);
         return $this->render('quiz/quiz.html.twig', [
             'controller_name' => 'MainController',
             'quiz' => $quiz,
             'codeHash' => $idHash
-        ]);    
+        ]);
     }
 
     /**
@@ -191,12 +196,12 @@ class MainController extends AbstractController
         foreach ($quiz->getQuestions() as $question){
             $total_reponse = 0;
             foreach($question->getReponses() as $reponse){
-                $id_res[$reponse->getId()] = $reponse->getId(); 
+                $id_res[$reponse->getId()] = $reponse->getId();
                 $result = $repoRes->findByresponse($reponse->getId());
                 $total_reponse += count($result);
                 $stat[$reponse->getId()] = count($result);
             }
-            foreach($id_res as $i => $idReponse){
+              foreach($id_res as $i => $idReponse){
                 $total_reponse = $total_reponse == null ? -1 : $total_reponse;
                 $pourcent[$idReponse] = round(($stat[$idReponse] / $total_reponse) * 100);
             }
@@ -214,7 +219,7 @@ class MainController extends AbstractController
                 'id_res' => $id_res,
                 'pourcent' => $pourcent,
                 'codeHash' => $idHash
-            ]); 
+            ]);
         } else {
             return $this->render('quiz/statistique.html.twig', [
                 'display' => false,
@@ -263,10 +268,10 @@ class MainController extends AbstractController
                 'codeHash' => $idHash
             ]);
         }
-
     }
 
-    /**   
+
+    /**
      * @Route("/remove_question/{id}", name="remove-question")
      */
     public function removeQuestion(Request $request, $id){
@@ -281,17 +286,17 @@ class MainController extends AbstractController
         $this->addFlash('success', 'La question a bien été supprimée.');
         return $this->redirectToRoute('edit-quiz', [ 'id' => $quiz->getId()]);
     }
-    
-    /**   
+
+    /**
      * @Route("/edit_question/{id}", name="edit-question")
      */
     public function editQuestion(Request $request, $id){
         $manager = $this->getDoctrine()->getManager();
-        
+
         $question = $manager->getRepository(Question::class)->find($id);
         $idQuiz = $question->getQuiz()->getId();
         $quiz = $manager->getRepository(Quiz::class)->find($idQuiz);
-        
+
         $form = $this->createForm(QuestionType::class, $question);
 
         $form->handleRequest($request);
@@ -331,6 +336,17 @@ class MainController extends AbstractController
                 if(!$quiz){//Si l'id renseigné ne correspond à aucun quiz
                     $this->addFlash('error', 'Erreur : Le quizz indiqué n\'existe pas.');  
                 }else{//On a rempli toutes les conditions pour accéder à la page de réponse
+                    $depasse = false;
+                    
+                    if ($quiz->getDeadLine() != null ) {
+                        $depasse =  (new \DateTime("now")) > $quiz->getDeadLine();
+                    }
+                    
+                    if($depasse) {
+                        $this->addFlash('error', 'Accès impossible ! La date limite du quiz a été dépassé.');
+                        return $this->redirectToRoute('search_quiz');
+                    }
+
                     $user = $this->getUser();
                     $idUser = $user->getId();
                     $manager = $this->getDoctrine()->getManager();
@@ -341,12 +357,10 @@ class MainController extends AbstractController
                     $IdsQuiz = $query->getResult();
                     
                     if (!empty($IdsQuiz)){
-                        print_r($IdsQuiz);
                         foreach($IdsQuiz as $idQuiz){
                             if ($idQuiz[1] == $id){
-                                return $this->render('quiz/search_quiz.html.twig', [
-                                    'controller_name' => 'MainController',
-                                ]);
+                                $this->addFlash('error', 'Accès impossible ! Vous avez déja répondu à ce quiz');
+                                return $this->redirectToRoute('search_quiz');
                             }
                         } 
                     }  

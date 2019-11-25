@@ -34,6 +34,17 @@ class Quiz
     private $questions;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $deadLine;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $end;
+
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="quizzes")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -103,6 +114,31 @@ class Quiz
 
         return $this;
     }
+
+    public function getDeadLine(): ?\DateTimeInterface
+    {
+        return $this->deadLine;
+    }
+
+    public function setDeadLine(?\DateTimeInterface $deadLine): self
+    {
+        $this->deadLine = $deadLine;
+
+        return $this;
+    }
+
+    public function getEnd(): ?bool
+    {
+        return $this->end;
+    }
+
+    public function setEnd(?bool $end): self
+    {
+        $this->end = $end;
+
+        return $this;
+    }
+
 
     public function getCreator(): ?User
     {
