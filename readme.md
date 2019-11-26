@@ -80,7 +80,7 @@ Modifiez ou ajoutez cette ligne dans le fichier *.env* à la racine du projet:
 DATABASE_URL=mysql://nom_utilisateur:mdp_de_votre_database@127.0.0.1:3306/quiz
 ```
 
-Création de la base de donnée et importation des fixtures:
+Création de la base de données et importation des fixtures:
 ```bash
 bin/console doctrine:database:create
 bin/console doctrine:schema:create
@@ -105,7 +105,7 @@ make encore-watch
 make server
 ```
 
-## Pour nettoyer le cache de symfony
+## Pour nettoyer le cache de Symfony
 
 ```bash
 make cc
@@ -113,4 +113,4 @@ make cc
 
 # Lien vers la VM
 
-Depuis le réseau de la fac ou à l'aide du VPN :
+Depuis le réseau de la fac ou à l'aide du VPN : 192.168.74.204
