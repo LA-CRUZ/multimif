@@ -46,7 +46,7 @@ class MainController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-          if ($form['end']->getData()) {
+          if ($form['end']->getData() && $form['deadLine']->getData() != null ) {
             $quiz->setDeadLine(($form['deadLine']->getData()));
           } else {
             $quiz->setDeadLine(null);

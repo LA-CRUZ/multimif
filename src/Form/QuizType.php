@@ -42,6 +42,7 @@ class QuizType extends AbstractType
                 'label' => false,
                 'widget' => 'single_text',
                 'format' => 'dd-MM-yyyy',
+                'required' => false,
                 'attr' => [
                     'class' => 'date js-datepicker',
                     'placeholder' => 'Date limite'
