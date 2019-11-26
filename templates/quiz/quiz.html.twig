@@ -15,7 +15,7 @@
             {% if (quiz.deadLine == null) %}
             <p> Ce quiz ne possède pas de date finale </p>
             {% else %}
-            <p> Ce quiz prend fin le {{quiz.deadLine|date('d-m-Y') }} à {{quiz.deadLine|date('H')}} h {{quiz.deadLine|date('m')}} </p>
+            <p> Ce quiz prend fin le {{quiz.deadLine|date('d-m-Y') }}</p>
             {% endif %}
             <ul>
                 {% for question in quiz.questions %}

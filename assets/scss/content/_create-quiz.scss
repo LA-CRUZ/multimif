@@ -16,6 +16,7 @@
     .btn-form {
         display: flex;
         justify-content: flex-end;
+        padding-bottom: 5rem;
 
         .btn-question {
             font-size: 1.2rem;
@@ -26,5 +27,13 @@
     input {
         color: $dark-blue;
         font-size: 1.2rem;
+    }
+
+    .date {
+        width: 30%;
+    }
+
+    .anchor-calendar {
+        position: relative;
     }
 }
