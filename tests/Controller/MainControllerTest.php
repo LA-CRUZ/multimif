@@ -3,7 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Controller\MainController;
-use App\Tests\Controller\Util;
+use App\Tests\Controller\AbstractControllerTestCase;
 use App\Entity\Quiz;
 use App\Entity\Result;
 use App\Entity\Question;
@@ -21,36 +21,17 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 
-class MainControllerTest extends TestCase
+class MainControllerTest extends AbstractControllerTestCase
 {
-    private $mainControllerMock;
-    private $managerRegistryMock;
-    private $formInterfaceMock;
-    private $userMock;
-
     protected function setUp()
     {
-        $this->mainControllerMock = 
+        $this->controllerMock = 
             $this
                 ->getMockBuilder(MainController::class)
                 ->setMethods(array('createForm','redirectToRoute','render','getDoctrine','numhash','getUser','addFlash'))
                 ->getMock();
-        
-        $this->managerRegistryMock = $this->createMock(ManagerRegistry::class);
-
-        $this->mainControllerMock
-            ->expects($this->any())
-            ->method('getDoctrine')
-            ->willReturn(
-                $this->managerRegistryMock
-            );
     
-        $objectManagerMock = $this->createMock(ObjectManager::class);
-
-        $this->managerRegistryMock
-            ->expects($this->any())
-            ->method('getManager')
-            ->willReturn($objectManagerMock);
+        parent::setUp();
 
         $resultRepoMock = $this->getMockBuilder(ResultRepository::class)
             ->setMethods(['findByresponse'])
@@ -60,7 +41,7 @@ class MainControllerTest extends TestCase
         $classes = [
                         Quiz::class => $this->createMock(QuizRepository::class),
                         Result::class => $resultRepoMock,
-                        Question::class => QuestionRepository::class
+                        Question::class => $this->createMock(QuestionRepository::class)
                     ];
         foreach($classes as $class => $repo)
         {
@@ -77,49 +58,32 @@ class MainControllerTest extends TestCase
             $map2[] = [$m[0] , $m[2]];
         }
 
-        $objectManagerMock
+        $this->managerRegistryMock->getManager()
             ->expects($this->any())
             ->method('getRepository')
             ->will($this->returnValueMap($map2));
-
-        $this->formInterfaceMock = $this->createMock(FormInterface::class);
-
-        $this->userMock = $this->createMock(User::class);
-
-        $this->mainControllerMock
-            ->expects($this->any())
-            ->method('getUser')
-            ->willReturn($this->userMock);
     }
 
-    public function testIndex()
+    public function testIndex()//1
     {
         $action = 'render';
         include __DIR__ . "/../RoutesAndTwigs.php";
-        $this->mainControllerMock->expects($this->once())
+        $this->controllerMock->expects($this->once())
             ->method($action)
             ->with(
                 $this->equalTo($indexTwig),$this->anything());
-        $this->mainControllerMock->index();
+        $this->controllerMock->index();
     }
-
-    private function setCreateFormReturnValue($form)
-    {
-        $this->mainControllerMock
-            ->expects($this->once())
-            ->method('createForm')
-            ->willReturn($form);
-    }
-
+    
     public function createDataProvider()
     {
         include __DIR__ . "/../RoutesAndTwigs.php";
-        //form submitted, form valid, database access, action, param
+        //form submitted, form valid, database actions, action, param
         $cases = [
-            [FALSE,FALSE,FALSE,'render',$quizCreateTwig],
-            [TRUE,FALSE,FAlSE,'render',$quizCreateTwig],
-            [FALSE,TRUE,FALSE,'render',$quizCreateTwig],
-            [TRUE,TRUE,TRUE,'redirectToRoute',$createQuestionRoute]
+            [FALSE,FALSE,[],'render',$quizCreateTwig],
+            [TRUE,FALSE,[],'render',$quizCreateTwig],
+            [FALSE,TRUE,[],'render',$quizCreateTwig],
+            [TRUE,TRUE,['persist' => 1],'redirectToRoute',$createQuestionRoute]
         ];
         
         return $cases;
@@ -128,13 +92,11 @@ class MainControllerTest extends TestCase
     /**
      * @dataProvider createDataProvider
      */
-    public function testCreate($formSubmitted,$formValid,$dbAccess,$action,$param)
+    public function testCreate($formSubmitted,$formValid,$dbActions,$action,$param)//9
     {
         //TODO treat case true
         $quizEnds = false;
-        Util::prepareObjectManagerMock($this->managerRegistryMock->getManager(),$dbAccess);
-        
-        Util::prepareFormMock($this->formInterfaceMock,$formSubmitted,$formValid);
+        $this->prepareObjectManagerMock($dbActions);
 
         $obj = new class($quizEnds) {
             private $ends;
@@ -145,24 +107,26 @@ class MainControllerTest extends TestCase
                 return $this->ends;
             }
         };
+
         $this->formInterfaceMock
             ->expects($this->any())
             ->method('offsetGet')
             ->will($this->returnValueMap([['end',$obj]]));
+        
+        $request = $this->createMock(Request::class);
+        $this->prepareFormMock($formSubmitted,$formValid,$request);
 
-        $this->setCreateFormReturnValue($this->formInterfaceMock);
+        $this->setFinalCall($action,$param);
 
-        Util::setFinalCall($this->mainControllerMock,$action,$param);
-
-        $this->mainControllerMock->create($this->createMock(Request::class));
+        $this->controllerMock->create($request);
     }
 
     public function createQuestionDataProvider()
     {
         include __DIR__ . "/../RoutesAndTwigs.php";
 
-        $fail = [FALSE,'render',$questionCreateTwig,FALSE];
-        //form submitted, form valid, addIsClicked, database access, action, param
+        $fail = [[],'render',$questionCreateTwig,FALSE];
+        //form submitted, form valid, addIsClicked, database actions, action, param
         $cases = [
             array_merge([FALSE,FALSE,FALSE],$fail),
             array_merge([FALSE,FALSE,TRUE],$fail),
@@ -170,8 +134,8 @@ class MainControllerTest extends TestCase
             array_merge([FALSE,TRUE,TRUE],$fail),
             array_merge([TRUE,FALSE,FALSE],$fail),
             array_merge([TRUE,FALSE,TRUE],$fail),
-            array_merge([TRUE,TRUE,FALSE],[TRUE]+$fail),
-            [TRUE,TRUE,TRUE,    TRUE,'redirectToRoute',$createQuestionRoute,TRUE]
+            array_merge([TRUE,TRUE,FALSE],[['persist'=>5]]+$fail),
+            [TRUE,TRUE,TRUE,['persist'=>5],'redirectToRoute',$createQuestionRoute,TRUE]
         ];
         
         return $cases;
@@ -179,22 +143,23 @@ class MainControllerTest extends TestCase
     /**
      * @dataProvider createQuestionDataProvider
      */
-    public function testCreateQuestion($formSubmitted,$formValid,$addIsClicked,$dbAccess,$action,$param,$flash)
+    public function testCreateQuestion($formSubmitted,$formValid,$addIsClicked,$dbActions,$action,$param,$flash)//16
     {
-        Util::prepareFormMock($this->formInterfaceMock,$formSubmitted,$formValid);
-        Util::flash($this->mainControllerMock,$flash);
+        //$this->flash($flash);
         $this->setAddIsClicked($this->formInterfaceMock,$addIsClicked);
-        $this->setCreateFormReturnValue($this->formInterfaceMock);
-        $manager = Util::prepareObjectManagerMock($this->managerRegistryMock->getManager(),$dbAccess);
+
+        $manager =$this->prepareObjectManagerMock($dbActions);
 
         $this->managerRegistryMock->getRepository(Quiz::class)
             ->expects($this->any())
             ->method('find')
             ->willReturn(new Quiz());
 
-        Util::setFinalCall($this->mainControllerMock,$action,$param);
-        
-        $this->mainControllerMock->createQuestion($this->createMock(Request::class),0);
+        $this->setFinalCall($action,$param);
+        $request = $this->createMock(Request::class);
+        $this->prepareFormMock($formSubmitted,$formValid);
+
+        $this->controllerMock->createQuestion($request,0);
     }
 
     private function setAddIsClicked($form,$addIsClicked)
@@ -202,8 +167,7 @@ class MainControllerTest extends TestCase
         $form
             ->expects($this->any())
             ->method('get')
-            ->with('add')
-            ->willReturn(
+            ->will($this->returnValueMap([['add',
                 new class($addIsClicked)
                 {
                     private $clicked;
@@ -216,7 +180,7 @@ class MainControllerTest extends TestCase
                     {
                         return $this->clicked;
                     }
-                }
+                }]])
             );
     }
 
@@ -232,11 +196,11 @@ class MainControllerTest extends TestCase
     /**
      * @dataProvider show_quiz_listDataProvider
      */
-    public function testShow_quiz_list($action,$param)
+    public function testShow_quiz_list($action,$param)//
     {   
-        Util::setFinalCall($this->mainControllerMock,$action,$param);
+        $this->setFinalCall($action,$param);
 
-        $this->mainControllerMock->show_quiz_list();
+        $this->controllerMock->show_quiz_list();
     }
 
     public function quizDataProvider()
@@ -250,7 +214,7 @@ class MainControllerTest extends TestCase
     /**
      * @dataProvider quizDataProvider
      */
-    public function testQuiz($referer,$flash)
+    public function testQuiz($referer,$flash)//2
     {
         include __DIR__ . "/../RoutesAndTwigs.php";
 
@@ -285,36 +249,90 @@ class MainControllerTest extends TestCase
                     return $this->attrs[$attrName];
                 }
             };
-        var_dump($request->headers);
-        Util::flash($this->mainControllerMock,$flash);
-        Util::setFinalCall($this->mainControllerMock,$action,$param,$attributes);
-        $this->mainControllerMock->quiz($request,$quizId);
+        $this->flash($flash);
+        $this->setFinalCall($action,$param,$attributes);
+        $this->controllerMock->quiz($request,$quizId);
+    }
+
+    public static function quizDesc($nbQuestions,$nbReponsesPerQuestion)
+    {
+        $quizDesc = ['id' => 27 , 'questions' => []];
+
+        for($nQ = 0 ; $nQ < $nbQuestions ; $nQ++)
+        {
+            $reponses = null;
+            for($nR = 0 ; $nR < $nbReponsesPerQuestion ; $nR++)
+            {
+                $reponses[] = $nR+$nQ*$nbReponsesPerQuestion; 
+            }
+            $quizDesc['questions'][] = ['id' => $nQ , 'reponses' => $reponses];
+        }
+
+        return $quizDesc;
+    }
+
+    private function buildQuizMock($quizDesc)
+    {
+        $quizMock = $this->createMock(Quiz::class);
+        $quizMock
+            ->expects($this->any())
+            ->method('getId')
+            ->willReturn($quizDesc['id']);
+        
+        $questionsMocks = [];
+        foreach($quizDesc['questions'] as $question)
+        {
+            $questionMock = $this->createMock(Question::class);
+            $questionMock
+                ->expects($this->any())
+                ->method('getId')
+                ->willReturn($question['id']);
+            
+            $reponses = null;
+            foreach($question['reponses'] as $reponseId)
+            {
+                $reponseMock = $this->createMock(Reponse::class);
+                $reponseMock
+                    ->expects($this->any())
+                    ->method('getId')
+                    ->willReturn($reponseId);
+                $reponses[]= $reponseMock;  
+            }
+            $questionMock
+                ->expects($this->any())
+                ->method('getReponses')
+                ->willReturn(new ArrayCollection($reponses));
+            
+            $questionMock
+                ->expects($this->any())
+                ->method('getQuiz')
+                ->willReturn($quizMock);
+
+            $questionsMocks[] = $questionMock;
+
+        }
+        $quizMock
+            ->expects($this->any())
+            ->method('getQuestions')
+            ->willReturn(new ArrayCollection($questionsMocks));
+
+        return $quizMock;
     }
 
     public function statDataProvider()
     {
         $baseAttributes = [
             'display' => false,
-            'codeHash' => 27
+            'codeHash' => 28
         ];
 
-        $quiz = ['id' => 0 , 'questions' => []];
 
-        $returnarray[] = [$quiz,[],$baseAttributes];
+        $returnarray[] = [$this->quizDesc(0,0),[],$baseAttributes];
 
         $nbQuestions = 4;
         $nbReponses = 3;
 
-        foreach(range(0,$nbQuestions-1) as $nQ)
-        {
-            $reponses = null;
-            foreach(range(0,$nbReponses-1) as $nR)
-            {
-                $reponses[] = $nR+$nQ*$nbReponses; 
-            }
-            $questions[] = ['id' => $nQ , 'reponses' => $reponses];
-        }
-        $quiz = ['id' => 0 , 'questions' => $questions];
+        $quiz = $this->quizDesc($nbQuestions,$nbReponses);
 
         $returnarray[]= [$quiz,array_fill(0,$nbQuestions*$nbReponses,0),$baseAttributes];
 
@@ -340,7 +358,7 @@ class MainControllerTest extends TestCase
 
     private function setHash($id,$hashedId)
     {
-        $this->mainControllerMock
+        $this->controllerMock
             ->expects($this->any())
             ->method('numhash')
             ->will($this->returnValueMap([[$id,$hashedId]]));
@@ -349,89 +367,119 @@ class MainControllerTest extends TestCase
     /**
      * @dataProvider statDataProvider
      */
-    public function testStat($quiz,$nbResultsByReponse,$attributes)
+    public function testStat($quizDesc,$nbResultsByReponse,$attributes)
     {
         include __DIR__ . "/../RoutesAndTwigs.php";
 
         $action = 'render';
         $param = $statTwig;
 
-        $quizMock = $this->createMock(Quiz::class);
-        $quizMock
-            ->expects($this->any())
-            ->method('getId')
-            ->willReturn($quiz['id']);
+        $quizMock = $this->buildQuizMock($quizDesc);
         
-        $this->setHash($quiz['id'],$attributes['codeHash']);
+        $this->setHash($quizDesc['id'],$attributes['codeHash']);
         
-        $questionsMocks = [];
-        foreach($quiz['questions'] as $question)
-        {
-            $questionMock = $this->createMock(Question::class);
-            $questionMock
-                ->expects($this->any())
-                ->method('getId')
-                ->willReturn($question['id']);
-            
-            $reponses = null;
-            foreach($question['reponses'] as $reponseId)
-            {
-                $reponseMock = $this->createMock(Reponse::class);
-                $reponseMock
-                    ->expects($this->any())
-                    ->method('getId')
-                    ->willReturn($reponseId);
-                $reponses[]= $reponseMock;  
-            }
-            $questionMock
-                    ->expects($this->any())
-                    ->method('getReponses')
-                    ->willReturn(new ArrayCollection($reponses));
-            
-            $questionsMocks[] = $questionMock;
-        }
-        $quizMock
-            ->expects($this->any())
-            ->method('getQuestions')
-            ->willReturn(new ArrayCollection($questionsMocks));
 
         $attributes['quiz'] = $quizMock;
 
         $this->managerRegistryMock->getRepository(Quiz::class)
             ->expects($this->any())
             ->method('find')
-            ->will($this->returnValueMap([[$quiz['id'],null,null,$quizMock]]));
+            ->will($this->returnValueMap([[$quizDesc['id'],null,null,$quizMock]]));
 
         $reponseIdToResultMap = [];
         foreach($nbResultsByReponse as $reponseId=>$nbResults)
         {
             $reponseIdToResultMap[]= [$reponseId , array_fill(0,$nbResults,'')];
         }
-        //var_dump($reponseIdToResultMap);
+        
         $this->managerRegistryMock->getRepository(Result::class)
             ->expects($this->any())
             ->method('findByresponse')
             ->will($this->returnValueMap($reponseIdToResultMap));
 
-        $this->mainControllerMock
-            ->expects($this->once())
-            ->method($action)
-            ->with(
-                $this->equalTo($param),
-                $this->equalTo($attributes)
-            );
-
-        $this->mainControllerMock->stat($quiz['id']);
+        
+        $this->setFinalCall($action,$param,$attributes);
+        $this->controllerMock->stat($quizDesc['id']);
     }
 
-    public function testAnswer()
+    public function answerDataProvider()
     {
-        $this->markTestSkipped();
+        include __DIR__ . "/../RoutesAndTwigs.php";
+        $reponses = [
+                '0' => 'a',
+                '2' => 'a',
+                '7' => 'a'
+            ];
+
+        $attributes = [
+            'formAnswer' => new class(){},
+            'codeHash' => 28
+        ];
+        
+        return [
+            [self::quizDesc(5,5),$reponses,['persist'=>3],'redirectToRoute',$searchQuizRoute,null,TRUE],
+            [self::quizDesc(5,5),[],[],'render',$answerTwig,$attributes,FALSE]
+        ];
+    }
+
+    /**
+     * @dataProvider answerDataProvider
+     */
+    public function testAnswer($quizDesc,$reponses,$dbActions,$action,$param,$attributes,$flash)
+    {
+        
+        $quizMock = $this->buildQuizMock($quizDesc);
+
+        $this->managerRegistryMock->getRepository(Quiz::class)
+            ->expects($this->any())
+            ->method('find')
+            ->will($this->returnValueMap([[$quizDesc['id'],null,null,$quizMock]]));
+
+        if($attributes){
+            $attributes['quiz'] = $quizMock;
+            $this->setHash($quizDesc['id'],$attributes['codeHash']);
+        }
+        $request = $this->createMock(Request::class);
+
+        $request->request = new class($reponses)
+            {
+                private $attrs;
+                public function __construct($attrs)
+                {
+                    $this->attrs = $attrs;
+                    //var_dump($attrs);
+                }
+                public function get($attrName)
+                {
+                    return array_key_exists($attrName,$this->attrs) ? $this->attrs[$attrName] : null;
+                }
+            };
+        
+        $this->prepareFormMock(false,false,$request,$attributes['formAnswer']);
+        $this->flash($flash);
+        $this->setFinalCall($action,$param,$attributes);
+
+        $this->controllerMock->answer($request,$quizDesc['id']);
     }
 
     public function testRemoveQuestion()
     {
-        $this->markTestSkipped();    
+        $action = 'redirectToRoute';
+        $param = 'edit-quiz';
+        
+        $quizMock = $this->buildQuizMock(self::quizDesc(5,5));
+        $attributes = ['id'=>$quizMock->getId()];
+        $questionMock = $quizMock->getQuestions()[0];
+        $this->managerRegistryMock->getRepository(Question::class)
+            ->expects($this->any())
+            ->method('find')
+            ->will($this->returnValueMap([[$questionMock->getId(),null,null,$questionMock]]));
+        
+        $this->prepareObjectManagerMock(['remove'=>1]);
+        $this->flash(true);
+        $this->setFinalCall($action,$param,$attributes);
+
+        $this->controllerMock->removeQuestion($this->createMock(Request::class),$questionMock->getId());
     }
     
 
