@@ -239,11 +239,12 @@ class MainController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
 
         $quiz = $this->getDoctrine()->getRepository(Quiz::class)->find($id);
-        $form = $this->createForm(ResultType::class);
+        
         $resultArray = [];
         foreach($quiz->getQuestions() as $question) {
             foreach($question->getReponses() as $reponse) {
                 $stringId = strval($reponse->getId());
+
                 if($request->request->get($stringId) != null) {
                     $result = new Result();
                     $result->setUser($this->getUser());
@@ -256,13 +257,14 @@ class MainController extends AbstractController
         foreach($resultArray as $result) {
             $manager->persist($result);
         }
-
+        
         $manager->flush();
 
         if(sizeof($resultArray) != 0) {
             $this->addFlash('success', 'Votre réponse a été enregistrée.');
             return $this->redirectToRoute('search_quiz');
         } else {
+            $form = $this->createForm(ResultType::class);
             $idHash = $this->numhash($id);
             return $this->render('quiz/answer_quiz.html.twig', [
                 'formAnswer' => $form->createView(),
@@ -280,6 +282,7 @@ class MainController extends AbstractController
         $manager = $this->getDoctrine()->getManager();
 
         $question = $manager->getRepository(Question::class)->find($id);
+
         $quiz = $question->getQuiz();
 
         $manager->remove($question);
